@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마찰력 탐구 실험</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  /* ★★★ 여기에 Firebase 설정을 붙여넣으세요 ★★★ */
+  const firebaseConfig = {
+    apiKey: "여기에_붙여넣기",
+    authDomain: "여기에_붙여넣기",
+    databaseURL: "여기에_붙여넣기",
+    projectId: "여기에_붙여넣기",
+    storageBucket: "여기에_붙여넣기",
+    messagingSenderId: "여기에_붙여넣기",
+    appId: "여기에_붙여넣기"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  const storage = getStorage(app);
+
+  window._fbSet    = (path, data) => set(ref(db, path), data);
+  window._fbListen = (path, cb)   => onValue(ref(db, path), snap => cb(snap.val()));
+  window._fbUpload = async (file, cls, grp) => {
+    const r = sRef(storage, `reports/${cls}반_${grp}모둠_${Date.now()}`);
+    await uploadBytes(r, file);
+    return getDownloadURL(r);
+  };
+
+  window._fbReady = true;
+  if(window._onFbReady) window._onFbReady();
+</script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0a5c47;--teal2:#0f7a5e;--teal3:#13a07a;--teal-glass:rgba(10,92,71,.08);
+  --amber:#9a6010;--amber-bg:#fef3dc;
+  --blue:#1a5fa8;--blue-bg:#e8f1fb;
+  --coral:#8b3220;--coral-bg:#fceae6;
+  --ink:#16160f;--ink2:#4a4a42;--ink3:#8a8a80;--ink4:#c8c8be;
+  --surface:#fff;--surface2:#f7f7f3;--surface3:#efefe9;
+  --border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.15);
+  --r:12px;--r2:18px;--r3:24px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.12)
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.app{max-width:640px;margin:0 auto;padding:0 0 5rem}
+.screen{display:none}.screen.active{display:block}
+.page-pad{padding:1.5rem 1.25rem}
+
+/* topbar */
+.topbar{background:linear-gradient(135deg,var(--teal) 0%,var(--teal2) 60%,var(--teal3) 100%);padding:2.5rem 1.5rem 3.5rem;position:relative;overflow:hidden}
+.topbar::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
+.topbar::after{content:'';position:absolute;bottom:-60px;left:-20px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.04)}
+.topbar-inner{position:relative;z-index:1}
+.topbar h1{font-size:24px;font-weight:700;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
+.topbar p{font-size:14px;color:rgba(255,255,255,.75);line-height:1.5}
+.topbar-emoji{font-size:42px;margin-bottom:12px;display:block}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem 1.5rem;margin-bottom:.85rem;box-shadow:var(--shadow)}
+.card.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}
+.card.tap:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.card.tap:active{transform:scale(.99)}
+.nav-card{display:flex;align-items:center;gap:1rem}
+.nav-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.nav-icon.green{background:var(--teal-glass)}
+.nav-icon.gray{background:var(--surface3)}
+.nav-arrow{margin-left:auto;color:var(--ink4);font-size:20px;flex-shrink:0}
+
+/* badge */
+.tbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.3px}
+.tbadge.A{background:#e0f3ec;color:#0a5c47}
+.tbadge.B{background:#fef3dc;color:#9a6010}
+.tbadge.C{background:#e8f1fb;color:#1a5fa8}
+
+/* progress */
+.progress-bar{height:3px;background:var(--surface3)}
+.progress-fill{height:100%;background:var(--teal3);transition:width .3s;border-radius:0 2px 2px 0}
+.back-row{padding:1rem 1.25rem .25rem;display:flex;align-items:center;gap:8px}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);margin:1.75rem 0 .75rem}
+
+/* class grid (11반) */
+.cls-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:1rem 0}
+.cls-btn{aspect-ratio:1;border:1.5px solid var(--border2);border-radius:var(--r2);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;transition:all .15s;position:relative}
+.cls-btn:hover{border-color:var(--teal2);background:var(--teal-glass);transform:translateY(-2px);box-shadow:var(--shadow)}
+.cls-btn .cnum{font-size:26px;font-weight:700;color:var(--ink)}
+.cls-btn .clbl{font-size:11px;color:var(--ink3);margin-top:2px}
+.cls-btn .cbadge{position:absolute;top:6px;right:8px;font-size:10px;font-weight:700;color:var(--teal);background:#e0f3ec;padding:2px 6px;border-radius:10px}
+
+/* group grid */
+.ggroup{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:1rem 0}
+.gbtn{aspect-ratio:1;border:1.5px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit;transition:all .15s}
+.gbtn:hover{border-color:var(--teal2);background:var(--teal-glass)}
+.gbtn.done{border-color:var(--teal2);background:#e0f3ec}
+.gbtn .gnum{font-size:20px;font-weight:700;color:var(--ink);line-height:1}
+.gbtn .gtype{font-size:10px;color:var(--ink3);margin-top:1px}
+.gbtn .gchk{font-size:10px;color:var(--teal);font-weight:600}
+.gbtn.done .gnum{color:var(--teal)}
+
+/* type cards */
+.tcard{border:2px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.25rem;cursor:pointer;transition:all .18s;background:var(--surface);margin-bottom:.75rem;position:relative}
+.tcard:hover{border-color:var(--teal2);box-shadow:0 4px 20px rgba(10,92,71,.12)}
+.tcard.sel{border-color:var(--teal);background:#f0faf6}
+.tcard.full{opacity:.45;cursor:not-allowed}
+.tcard.full:hover{border-color:var(--border);box-shadow:none}
+.tcard-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.tcard-emoji{font-size:26px;line-height:1}
+.tcard-title{font-size:15px;font-weight:600}
+.tcard-desc{font-size:13px;color:var(--ink2);line-height:1.6}
+.tcard-meta{position:absolute;top:14px;right:16px;font-size:12px;color:var(--ink3)}
+.tcard.sel .tcard-meta{display:none}
+.tcard-check{display:none;position:absolute;top:14px;right:14px;color:var(--teal);font-size:22px}
+.tcard.sel .tcard-check{display:block}
+.tcard-full-msg{font-size:12px;color:var(--coral);margin-top:6px}
+
+/* form */
+.dtable-wrap{overflow-x:auto;margin:.5rem 0 1rem;border-radius:var(--r);border:1px solid var(--border)}
+.dtable{width:100%;border-collapse:collapse;min-width:340px}
+.dtable th{padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);background:var(--surface2);border-bottom:1px solid var(--border);text-align:center}
+.dtable th:first-child{text-align:left}
+.dtable td{padding:6px 8px;border-bottom:1px solid var(--border)}
+.dtable tr:last-child td{border-bottom:none}
+.dtable td:first-child{padding:10px 12px;font-size:13px;color:var(--ink2);white-space:nowrap}
+.dtable .avg-cell{text-align:right;font-weight:700;font-size:13px;color:var(--teal);white-space:nowrap;padding:10px 12px}
+.dtable input{width:100%;padding:7px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;text-align:center;background:var(--surface);color:var(--ink);min-width:56px}
+.dtable input:focus{outline:none;border-color:var(--teal2);box-shadow:0 0 0 2px rgba(10,92,71,.1)}
+
+.qbox{background:var(--surface2);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.75rem}
+.qbox .qlabel{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.qbox .qtitle{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.5}
+.qbox textarea{width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--surface);color:var(--ink);resize:vertical;line-height:1.65;min-height:80px;transition:border-color .15s}
+.qbox textarea:focus{outline:none;border-color:var(--teal2);box-shadow:0 0 0 3px rgba(10,92,71,.1)}
+
+/* upload */
+.upload-area{border:2px dashed var(--border2);border-radius:var(--r2);padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface2)}
+.upload-area:hover{border-color:var(--teal2);background:var(--teal-glass)}
+.upload-area input{display:none}
+.preview-img{max-width:100%;max-height:200px;border-radius:var(--r);border:1px solid var(--border);display:block;margin:0 auto}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--surface);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--surface3)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 4px 14px rgba(10,92,71,.3)}
+.btn.primary:hover{background:var(--teal2)}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
+.btn.sm{padding:6px 13px;font-size:12px;border-radius:9px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink3)}
+.btn.ghost:hover{background:var(--surface3);color:var(--ink)}
+.btn-full{width:100%;justify-content:center;padding:14px}
+
+/* stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1rem;text-align:center;box-shadow:var(--shadow)}
+.stat .val{font-size:24px;font-weight:700;line-height:1}
+.stat .lbl{font-size:11px;color:var(--ink3);margin-top:5px;font-weight:500}
+
+/* dashboard */
+.dentry{display:flex;gap:12px;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--border)}
+.dentry:last-child{border-bottom:none}
+.dthumb{width:72px;height:58px;border-radius:10px;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.dthumb-ph{width:72px;height:58px;border-radius:10px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--border)}
+.pill{background:var(--surface3);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--ink2);display:inline-block}
+
+/* class tab bar */
+.cls-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:1rem;scrollbar-width:none}
+.cls-tabs::-webkit-scrollbar{display:none}
+.cls-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;color:var(--ink2)}
+.cls-tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.cls-tab:hover:not(.active){background:var(--surface3)}
+
+/* pin */
+.pin-wrap{max-width:320px;margin:3rem auto;text-align:center;padding:0 1rem}
+.pin-row{display:flex;gap:10px;justify-content:center;margin:1.5rem 0}
+.pin-cell{width:56px;height:56px;border-radius:var(--r);border:2px solid var(--border2);font-size:26px;font-weight:700;text-align:center;font-family:inherit;background:var(--surface);transition:border-color .15s}
+.pin-cell:focus{outline:none;border-color:var(--teal2);box-shadow:0 0 0 3px rgba(10,92,71,.12)}
+.pin-err{font-size:13px;color:var(--coral);min-height:20px;margin-top:4px}
+
+/* modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r3) var(--r3) 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:640px;max-height:88vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:var(--ink4);border-radius:2px;margin:0 auto 1.25rem}
+
+/* notice */
+.notice{border-radius:var(--r);padding:.85rem 1rem;font-size:13px;line-height:1.6;margin-bottom:1rem}
+.notice.blue{background:var(--blue-bg);color:var(--blue)}
+.notice.green{background:#e0f3ec;color:var(--teal)}
+
+/* success */
+.success-wrap{text-align:center;padding:4rem 1.5rem}
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* loading */
+.loading-wrap{display:flex;flex-direction:column;align-items:center;padding:5rem 0;gap:14px}
+.loading-ring{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+
+.hint{font-size:12px;color:var(--ink3);text-align:center;margin-top:.5rem}
+
+/* 반 chip in form header */
+.cls-chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--ink2)}
+
+@media(max-width:480px){
+  .stat-row{grid-template-columns:1fr 1fr}
+  .cls-grid{grid-template-columns:repeat(4,1fr)}
+  .ggroup{gap:6px}
+  .gbtn .gnum{font-size:17px}
+  .topbar{padding:2rem 1.25rem 3rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ S0: HOME ══ -->
+<div class="screen active" id="s0">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <span class="topbar-emoji">🔬</span>
+      <h1>마찰력 탐구 실험</h1>
+      <p>빗면에서 미끄러지기 시작하는 각도를 측정하고<br>마찰력의 원리를 탐구합니다.</p>
+    </div>
+  </div>
+  <div class="page-pad">
+    <div class="sec-title">메뉴</div>
+    <div class="card tap" onclick="go(1)">
+      <div class="nav-card">
+        <div class="nav-icon green"><i class="ti ti-pencil" style="font-size:22px;color:var(--teal)"></i></div>
+        <div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:3px">실험 결과 제출하기</div>
+          <div style="font-size:13px;color:var(--ink3)">반 선택 → 모둠 선택 → 주제 선택 → 데이터 입력</div>
+        </div>
+        <i class="ti ti-chevron-right nav-arrow"></i>
+      </div>
+    </div>
+    <div class="card tap" onclick="go('pin')">
+      <div class="nav-card">
+        <div class="nav-icon gray"><i class="ti ti-layout-dashboard" style="font-size:22px;color:var(--ink2)"></i></div>
+        <div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:3px">교사 대시보드</div>
+          <div style="font-size:13px;color:var(--ink3)">전체 반·모둠 제출 현황 및 결과 분석</div>
+        </div>
+        <i class="ti ti-chevron-right nav-arrow"></i>
+      </div>
+    </div>
+
+    <div class="sec-title">탐구 주제 안내</div>
+    <div class="card" style="padding:1rem 1.25rem">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span class="tbadge A">A형</span>
+          <div style="font-size:13px;line-height:1.6"><strong>접촉면 거칠기</strong><br><span style="color:var(--ink3)">플라스틱 면 / 고무 면 / 사포 면</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span class="tbadge B">B형</span>
+          <div style="font-size:13px;line-height:1.6"><strong>물체 무게</strong><br><span style="color:var(--ink3)">가벼운 것 / 무거운 것</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span class="tbadge C">C형</span>
+          <div style="font-size:13px;line-height:1.6"><strong>접촉 면적</strong><br><span style="color:var(--ink3)">넓은 면 / 좁은 면</span></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">※ 각 주제 최대 5모둠까지 선택 가능</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S1: CLASS SELECT ══ -->
+<div class="screen" id="s1">
+  <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+  <div class="back-row">
+    <button class="btn ghost sm" onclick="go(0)"><i class="ti ti-arrow-left"></i> 처음으로</button>
+    <span style="font-size:12px;color:var(--ink3);margin-left:auto">1 / 4단계</span>
+  </div>
+  <div class="page-pad" style="padding-top:.5rem">
+    <div style="font-size:20px;font-weight:700;margin-bottom:4px">반 선택</div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:1.25rem">우리 반을 선택하세요.</div>
+    <div class="cls-grid" id="classGrid"></div>
+  </div>
+</div>
+
+<!-- ══ S2: GROUP SELECT ══ -->
+<div class="screen" id="s2">
+  <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+  <div class="back-row">
+    <button class="btn ghost sm" onclick="go(1)"><i class="ti ti-arrow-left"></i> 반 선택</button>
+    <span style="font-size:12px;color:var(--ink3);margin-left:auto">2 / 4단계</span>
+  </div>
+  <div class="page-pad" style="padding-top:.5rem">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span class="cls-chip" id="grpClsLabel"></span>
+      <div style="font-size:20px;font-weight:700">모둠 선택</div>
+    </div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:1.25rem">우리 모둠 번호를 선택하세요.</div>
+    <div class="ggroup" id="groupGrid"></div>
+    <div class="hint"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> 초록색은 이미 제출 완료된 모둠입니다.</div>
+  </div>
+</div>
+
+<!-- ══ S3: TYPE SELECT ══ -->
+<div class="screen" id="s3">
+  <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+  <div class="back-row">
+    <button class="btn ghost sm" onclick="go(2)"><i class="ti ti-arrow-left"></i> 모둠 선택</button>
+    <span style="font-size:12px;color:var(--ink3);margin-left:auto">3 / 4단계</span>
+  </div>
+  <div class="page-pad" style="padding-top:.5rem">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span class="cls-chip" id="typeClsLabel"></span>
+      <div style="font-size:20px;font-weight:700">실험 주제 선택</div>
+    </div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:1.25rem"><span id="typeGrpLabel" style="font-weight:700;color:var(--teal)"></span>이 탐구할 주제를 직접 고르세요.</div>
+    <div id="typeCards"></div>
+    <button class="btn primary btn-full" id="typeNextBtn" onclick="go(4)" disabled>
+      이 주제로 실험할게요 <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ══ S4: FORM ══ -->
+<div class="screen" id="s4">
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+  <div class="back-row">
+    <button class="btn ghost sm" onclick="go(3)"><i class="ti ti-arrow-left"></i> 주제 선택</button>
+    <span style="font-size:12px;color:var(--ink3);margin-left:auto">4 / 4단계</span>
+  </div>
+  <div class="page-pad" style="padding-top:.5rem">
+    <div id="formContent"></div>
+  </div>
+</div>
+
+<!-- ══ S5: SUCCESS ══ -->
+<div class="screen" id="s5">
+  <div class="success-wrap">
+    <div style="font-size:64px;margin-bottom:16px">🎉</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:8px">제출 완료!</div>
+    <div style="font-size:14px;color:var(--ink2);line-height:1.7">실험 결과가 저장되었어요.<br>선생님께서 확인하실 수 있습니다.</div>
+    <div style="margin-top:2rem"><button class="btn primary" onclick="go(0)"><i class="ti ti-home"></i> 처음으로</button></div>
+  </div>
+</div>
+
+<!-- ══ SPIN: PIN ══ -->
+<div class="screen" id="spin">
+  <div class="back-row">
+    <button class="btn ghost sm" onclick="go(0)"><i class="ti ti-arrow-left"></i> 처음으로</button>
+  </div>
+  <div class="pin-wrap">
+    <div style="font-size:44px;margin-bottom:14px">🔒</div>
+    <div style="font-size:21px;font-weight:700;margin-bottom:6px">교사 PIN 입력</div>
+    <div style="font-size:14px;color:var(--ink2)">4자리 비밀번호를 입력하세요.</div>
+    <div class="pin-row">
+      <input type="password" maxlength="1" class="pin-cell" id="p1" oninput="pinNext(0)" inputmode="numeric">
+      <input type="password" maxlength="1" class="pin-cell" id="p2" oninput="pinNext(1)" inputmode="numeric">
+      <input type="password" maxlength="1" class="pin-cell" id="p3" oninput="pinNext(2)" inputmode="numeric">
+      <input type="password" maxlength="1" class="pin-cell" id="p4" oninput="pinNext(3)" inputmode="numeric">
+    </div>
+    <div class="pin-err" id="pinErr"></div>
+    <button class="btn primary btn-full" onclick="checkPin()" style="margin-top:16px"><i class="ti ti-lock-open"></i> 확인</button>
+    <div class="hint" style="margin-top:14px">기본 PIN: <code>1234</code></div>
+  </div>
+</div>
+
+<!-- ══ S6: DASHBOARD ══ -->
+<div class="screen" id="s6">
+  <div class="topbar" style="padding:1.5rem 1.5rem 2rem">
+    <div class="topbar-inner" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:19px;font-weight:700;color:#fff">📊 교사 대시보드</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px">실시간 제출 현황 — 전체 11반</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn sm" onclick="renderDash()" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff"><i class="ti ti-refresh"></i></button>
+        <button class="btn sm" onclick="go(0)" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="page-pad">
+    <div class="stat-row" id="dashStats"></div>
+    <!-- 반 탭 -->
+    <div class="cls-tabs" id="clsTabs"></div>
+    <div id="dashContent"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-bg" id="modalBg" onclick="bgClose(event)">
+  <div class="modal" id="modalInner"><div class="modal-handle"></div></div>
+</div>
+
+</div>
+<script>
+/* ═══════════════════════════════
+   CONFIG
+═══════════════════════════════ */
+const PIN      = '1234';
+const MAX      = 5;
+const N_CLASS  = 11;
+const N_GROUP  = 15;
+
+const TYPES = {
+  A:{label:'접촉면 거칠기',emoji:'🪵',
+     desc:'접촉면의 재질(거칠기)을 달리하여 물체가 미끄러지기 시작하는 빗면 각도를 측정한다.',
+     varLabel:'거칠기 조건',vars:['플라스틱 면','고무 면','사포 면']},
+  B:{label:'물체 무게',emoji:'⚖️',
+     desc:'물체의 무게를 달리하여 미끄러지기 시작하는 빗면 각도를 측정한다.',
+     varLabel:'물체 무게',vars:['가벼운 것','무거운 것']},
+  C:{label:'접촉 면적',emoji:'📐',
+     desc:'물체의 접촉 면적을 달리하여 미끄러지기 시작하는 빗면 각도를 측정한다.',
+     varLabel:'접촉 면적',vars:['넓은 면','좁은 면']}
+};
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let allSubs  = {};   // { "반_모둠": submissionObj }
+let curCls   = null; // 선택된 반 (1~11)
+let curGroup = null; // 선택된 모둠 (1~15)
+let curType  = null; // 선택된 유형 (A/B/C)
+let fbReady  = false;
+let dashCls  = 1;    // 대시보드에서 현재 보는 반
+
+/* Firebase 키 헬퍼 */
+const key = (cls, grp) => `c${cls}_g${grp}`;
+
+/* 현재 반의 제출물 */
+const clsSubs = (cls) => {
+  const out = {};
+  for(let g=1;g<=N_GROUP;g++){
+    const k=key(cls,g);
+    if(allSubs[k]) out[g]=allSubs[k];
+  }
+  return out;
+};
+
+/* ═══════════════════════════════
+   FIREBASE
+═══════════════════════════════ */
+function initFb(){
+  fbReady = true;
+  window._fbListen('submissions', val => {
+    allSubs = val || {};
+    if(document.getElementById('s6').classList.contains('active')) renderDash();
+    if(document.getElementById('s2').classList.contains('active')) renderGrid();
+    if(document.getElementById('s1').classList.contains('active')) renderClassGrid();
+  });
+}
+if(window._fbReady){ initFb(); }
+else { window._onFbReady = initFb; }
+
+/* ═══════════════════════════════
+   NAVIGATION
+═══════════════════════════════ */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sid = id==='pin'?'spin':'s'+id;
+  document.getElementById(sid).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id===1) renderClassGrid();
+  if(id===2) renderGrid();
+  if(id===3) renderTypeSelect();
+  if(id===4) renderForm();
+  if(id===6) renderDash();
+}
+
+/* ═══════════════════════════════
+   S1 — CLASS GRID
+═══════════════════════════════ */
+function renderClassGrid(){
+  const el = document.getElementById('classGrid');
+  el.innerHTML = '';
+  for(let c=1;c<=N_CLASS;c++){
+    const cnt = Object.values(allSubs).filter(s=>s.cls===c).length;
+    const b = document.createElement('button');
+    b.className = 'cls-btn';
+    b.innerHTML = `
+      ${cnt>0?`<span class="cbadge">${cnt}제출</span>`:''}
+      <span class="cnum">${c}</span>
+      <span class="clbl">반</span>`;
+    b.onclick = ()=>{ curCls=c; curGroup=null; curType=null; go(2); };
+    el.appendChild(b);
+  }
+}
+
+/* ═══════════════════════════════
+   S2 — GROUP GRID
+═══════════════════════════════ */
+function renderGrid(){
+  document.getElementById('grpClsLabel').textContent = curCls+'반';
+  const subs = clsSubs(curCls);
+  const el = document.getElementById('groupGrid');
+  el.innerHTML = '';
+  for(let i=1;i<=N_GROUP;i++){
+    const done = !!subs[i];
+    const t = done ? subs[i].type : '';
+    const b = document.createElement('button');
+    b.className = 'gbtn'+(done?' done':'');
+    b.innerHTML = `<span class="gnum">${i}</span><span class="gtype">${done?t+'형':'—'}</span>${done?'<span class="gchk">✓</span>':''}`;
+    b.onclick = ()=>{ curGroup=i; curType=done?subs[i].type:null; go(3); };
+    el.appendChild(b);
+  }
+}
+
+/* ═══════════════════════════════
+   S3 — TYPE SELECT
+═══════════════════════════════ */
+function typeCounts(){
+  /* 현재 반 기준 */
+  const c={A:0,B:0,C:0};
+  const subs=clsSubs(curCls);
+  Object.values(subs).forEach(s=>{ if(c[s.type]!==undefined) c[s.type]++; });
+  return c;
+}
+
+function renderTypeSelect(){
+  document.getElementById('typeClsLabel').textContent = curCls+'반';
+  document.getElementById('typeGrpLabel').textContent = curGroup+'모둠';
+  const subs = clsSubs(curCls);
+  if(subs[curGroup]) curType = subs[curGroup].type;
+  const counts = typeCounts();
+  document.getElementById('typeCards').innerHTML = Object.entries(TYPES).map(([key,info])=>{
+    const cnt = counts[key]||0;
+    const isFull = cnt>=MAX && curType!==key;
+    const isSel  = curType===key;
+    return `<div class="tcard${isSel?' sel':''}${isFull?' full':''}" id="tc_${key}" onclick="selectType('${key}',${isFull})">
+      <i class="ti ti-check tcard-check"></i>
+      <div class="tcard-meta">${cnt}/${MAX}모둠 선택중</div>
+      <div class="tcard-head">
+        <span class="tcard-emoji">${info.emoji}</span>
+        <span class="tbadge ${key}">${key}형</span>
+        <span class="tcard-title">${info.label}</span>
+      </div>
+      <div class="tcard-desc">${info.desc}</div>
+      ${isFull?`<div class="tcard-full-msg"><i class="ti ti-alert-circle"></i> 이미 ${MAX}모둠이 선택했습니다.</div>`:''}
+    </div>`;
+  }).join('');
+  updateTypeBtn();
+}
+
+function selectType(k,isFull){
+  if(isFull) return;
+  curType=k;
+  document.querySelectorAll('.tcard').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('tc_'+k).classList.add('sel');
+  updateTypeBtn();
+}
+function updateTypeBtn(){
+  const btn=document.getElementById('typeNextBtn');
+  btn.disabled=!curType;
+}
+
+/* ═══════════════════════════════
+   S4 — FORM
+═══════════════════════════════ */
+function renderForm(){
+  const g=curGroup, t=curType, c=curCls, info=TYPES[t];
+  const ex = allSubs[key(c,g)] || null;
+
+  const tableRows = info.vars.map((v,i)=>`
+    <tr>
+      <td>${v}</td>
+      ${[0,1,2].map(j=>`<td><input type="number" step="0.1" min="0" max="90" id="a${i}_${j}" placeholder="—" value="${ex&&ex.angles&&ex.angles[i]&&ex.angles[i][j]!=null?ex.angles[i][j]:''}" oninput="calcAvg(${i})"></td>`).join('')}
+      <td class="avg-cell" id="avg${i}">—</td>
+    </tr>`).join('');
+
+  document.getElementById('formContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1rem">
+      <span class="cls-chip">${c}반</span>
+      <span class="tbadge ${t}">${t}형</span>
+      <div style="font-size:20px;font-weight:700">${g}모둠</div>
+      <div style="font-size:14px;color:var(--ink2)">— ${info.label}</div>
+    </div>
+    <div class="notice blue">${info.desc}</div>
+
+    <div class="card" style="padding:1.25rem">
+      <div style="font-size:15px;font-weight:600;margin-bottom:.75rem">📐 측정 데이터</div>
+      <div style="font-size:13px;color:var(--ink2);margin-bottom:.75rem">각 조건에서 미끄러지기 시작하는 각도를 3회 측정하세요.</div>
+      <div class="dtable-wrap">
+        <table class="dtable">
+          <thead><tr>
+            <th>${info.varLabel}</th>
+            <th>1차 (°)</th><th>2차 (°)</th><th>3차 (°)</th>
+            <th style="text-align:right">평균 (°)</th>
+          </tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="padding:1.25rem">
+      <div style="font-size:15px;font-weight:600;margin-bottom:.75rem">📸 보고서 사진</div>
+      <div class="upload-area" onclick="document.getElementById('photoFile').click()">
+        <input type="file" id="photoFile" accept="image/*" onchange="previewPhoto()">
+        <div style="font-size:36px;margin-bottom:8px">📄</div>
+        <div style="font-size:14px;color:var(--ink2);font-weight:500">사진을 탭하여 업로드</div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:4px">실험 보고서를 카메라로 찍어서 올려주세요</div>
+      </div>
+      <div id="photoPreview" style="margin-top:12px">
+        ${ex&&ex.photo?`<img src="${ex.photo}" class="preview-img">`:''}
+      </div>
+    </div>
+
+    <div class="card" style="padding:1.25rem">
+      <div style="font-size:15px;font-weight:600;margin-bottom:.75rem">🔍 분석 및 결론</div>
+      <div class="qbox">
+        <div class="qlabel">분석 01</div>
+        <div class="qtitle">${info.varLabel}에 따라 미끄러지기 시작하는 각도는 어떻게 달라졌나요?</div>
+        <textarea id="q1" placeholder="측정 결과를 바탕으로 경향을 서술하세요.">${ex?ex.q1||'':''}</textarea>
+      </div>
+      <div class="qbox">
+        <div class="qlabel">분석 02</div>
+        <div class="qtitle">이 결과를 통해 빗면에서 미끄러지지 않기 위해서 어떻게 해야 할지 결론을 쓰세요.</div>
+        <textarea id="q2" placeholder="실험 결과를 근거로 빗면에서 미끄러지지 않는 방법을 서술하세요.">${ex?ex.q2||'':''}</textarea>
+      </div>
+      <div class="qbox">
+        <div class="qlabel">분석 03</div>
+        <div class="qtitle">이 실험의 조작 변인, 통제 변인, 종속 변인을 각각 쓰세요.</div>
+        <textarea id="q3" placeholder="예) 조작 변인: 거칠기 조건 / 통제 변인: 무게·면적 / 종속 변인: 미끄러지기 시작하는 각도">${ex?ex.q3||'':''}</textarea>
+      </div>
+    </div>
+
+    <button class="btn primary btn-full" id="submitBtn" onclick="submitForm()">
+      <i class="ti ti-send"></i> 제출하기
+    </button>
+    <div id="formMsg" style="min-height:20px;margin-top:10px;text-align:center;font-size:13px"></div>
+  `;
+  info.vars.forEach((_,i)=>calcAvg(i));
+}
+
+function calcAvg(i){
+  const vals=[0,1,2].map(j=>{const v=parseFloat(document.getElementById(`a${i}_${j}`).value);return isNaN(v)?null:v;});
+  const valid=vals.filter(v=>v!==null);
+  const el=document.getElementById(`avg${i}`);
+  if(el) el.textContent=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1)+'°':'—';
+}
+
+function previewPhoto(){
+  const file=document.getElementById('photoFile').files[0];
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{document.getElementById('photoPreview').innerHTML=`<img src="${e.target.result}" class="preview-img">`;};
+  r.readAsDataURL(file);
+}
+
+async function submitForm(){
+  if(!fbReady){alert('Firebase 연결을 확인해주세요.');return;}
+  const g=curGroup,t=curType,c=curCls,info=TYPES[t];
+  const angles=info.vars.map((_,i)=>[0,1,2].map(j=>{const v=parseFloat(document.getElementById(`a${i}_${j}`).value);return isNaN(v)?null:v;}));
+  if(!angles.some(row=>row.some(v=>v!==null))){
+    document.getElementById('formMsg').innerHTML='<span style="color:var(--coral)">⚠️ 측정값을 하나 이상 입력해주세요.</span>';return;
+  }
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> 저장 중...';
+
+  let photoURL=allSubs[key(c,g)]?allSubs[key(c,g)].photo:null;
+  const file=document.getElementById('photoFile').files[0];
+  if(file){
+    try{photoURL=await window._fbUpload(file,c,g);}
+    catch(e){console.warn('사진 업로드 실패',e);}
+  }
+
+  const data={
+    cls:c,group:g,type:t,angles,
+    photo:photoURL||null,
+    q1:document.getElementById('q1').value.trim(),
+    q2:document.getElementById('q2').value.trim(),
+    q3:document.getElementById('q3').value.trim(),
+    time:new Date().toLocaleTimeString('ko-KR')
+  };
+
+  try{
+    await window._fbSet(`submissions/${key(c,g)}`,data);
+    try{const end=Date.now()+1000;(function f(){confetti({particleCount:4,angle:60,spread:55,origin:{x:0},colors:['#0a5c47','#13a07a','#e0f3ec']});confetti({particleCount:4,angle:120,spread:55,origin:{x:1},colors:['#0a5c47','#13a07a','#e0f3ec']});if(Date.now()<end)requestAnimationFrame(f);})();}catch(e){}
+    setTimeout(()=>go(5),600);
+  }catch(e){
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-send"></i> 제출하기';
+    document.getElementById('formMsg').innerHTML=`<span style="color:var(--coral)">오류: ${e.message}</span>`;
+  }
+}
+
+/* ═══════════════════════════════
+   PIN
+═══════════════════════════════ */
+const pinIds=['p1','p2','p3','p4'];
+function pinNext(idx){if(document.getElementById(pinIds[idx]).value.length===1&&idx<3)document.getElementById(pinIds[idx+1]).focus();}
+function checkPin(){
+  const pin=pinIds.map(id=>document.getElementById(id).value).join('');
+  if(pin===PIN){pinIds.forEach(id=>{document.getElementById(id).value=''});document.getElementById('pinErr').textContent='';go(6);}
+  else{document.getElementById('pinErr').textContent='PIN이 올바르지 않습니다.';pinIds.forEach(id=>{document.getElementById(id).value=''});document.getElementById('p1').focus();}
+}
+
+/* ═══════════════════════════════
+   DASHBOARD
+═══════════════════════════════ */
+function renderDash(){
+  /* 전체 통계 */
+  const total=Object.keys(allSubs).length;
+  const totalMax=N_CLASS*N_GROUP;
+  const gc={A:0,B:0,C:0};
+  Object.values(allSubs).forEach(s=>{if(gc[s.type]!==undefined)gc[s.type]++;});
+
+  document.getElementById('dashStats').innerHTML=`
+    <div class="stat"><div class="val">${total}<span style="font-size:13px;color:var(--ink3)">/${totalMax}</span></div><div class="lbl">전체 제출</div></div>
+    <div class="stat"><div class="val" style="color:var(--teal)">${gc.A}</div><div class="lbl">A형 거칠기</div></div>
+    <div class="stat"><div class="val" style="color:var(--amber)">${gc.B}</div><div class="lbl">B형 무게</div></div>
+    <div class="stat"><div class="val" style="color:var(--blue)">${gc.C}</div><div class="lbl">C형 면적</div></div>
+  `;
+
+  /* 반 탭 */
+  let tabs='';
+  for(let c=1;c<=N_CLASS;c++){
+    const cnt=Object.values(allSubs).filter(s=>s.cls===c).length;
+    tabs+=`<button class="cls-tab${dashCls===c?' active':''}" onclick="switchDashCls(${c})">${c}반 <span style="font-size:11px;opacity:.7">${cnt}/${N_GROUP}</span></button>`;
+  }
+  document.getElementById('clsTabs').innerHTML=tabs;
+
+  renderDashCls();
+}
+
+function switchDashCls(c){
+  dashCls=c;
+  document.querySelectorAll('.cls-tab').forEach((t,i)=>t.classList.toggle('active',i+1===c));
+  renderDashCls();
+}
+
+function renderDashCls(){
+  const subs=clsSubs(dashCls);
+  const counts={A:0,B:0,C:0};
+  Object.values(subs).forEach(s=>{if(counts[s.type]!==undefined)counts[s.type]++;});
+
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <div style="font-size:16px;font-weight:700">${dashCls}반 현황</div>
+    <div style="font-size:13px;color:var(--ink3)">${Object.keys(subs).length}/${N_GROUP}모둠 제출</div>
+  </div>`;
+
+  Object.entries(TYPES).forEach(([tkey,info])=>{
+    const typeSubs=Object.values(subs).filter(s=>s.type===tkey).sort((a,b)=>a.group-b.group);
+    html+=`<div class="card" style="padding:1.25rem;margin-bottom:.75rem">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:${typeSubs.length?'1rem':'.25rem'}">
+        <span class="tbadge ${tkey}">${tkey}형</span>
+        <div style="font-size:14px;font-weight:600">${info.label}</div>
+        <div style="margin-left:auto;font-size:12px;color:var(--ink3)">${typeSubs.length}/${MAX}</div>
+      </div>`;
+    if(!typeSubs.length){
+      html+='<div style="font-size:13px;color:var(--ink3);padding:.25rem 0">아직 제출 없음</div>';
+    } else {
+      typeSubs.forEach(s=>{
+        const avgs=(s.angles||[]).map(row=>{const v=(row||[]).filter(x=>x!=null);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—';});
+        html+=`<div class="dentry">
+          ${s.photo?`<img src="${s.photo}" class="dthumb">`:`<div class="dthumb-ph">📄</div>`}
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <strong style="font-size:14px">${s.group}모둠</strong>
+              <span style="font-size:11px;color:var(--ink3)">${s.time||''}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px">
+              ${info.vars.map((v,i)=>`<span class="pill">${v}: ${avgs[i]||'—'}°</span>`).join('')}
+            </div>
+            <button class="btn sm" onclick="showDetail('${key(dashCls,s.group)}')"><i class="ti ti-eye"></i> 상세</button>
+          </div>
+        </div>`;
+      });
+    }
+    html+='</div>';
+  });
+
+  const noSub=[...Array(N_GROUP)].map((_,i)=>i+1).filter(i=>!subs[i]);
+  if(noSub.length){
+    html+=`<div class="card" style="background:var(--surface2);border-style:dashed;padding:1rem 1.25rem">
+      <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:8px">⏳ 미제출 모둠</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${noSub.map(n=>`<span class="pill">${n}모둠</span>`).join('')}</div>
+    </div>`;
+  } else {
+    html+=`<div class="notice green" style="text-align:center;font-size:15px;font-weight:600">🎉 ${dashCls}반 전체 제출 완료!</div>`;
+  }
+  document.getElementById('dashContent').innerHTML=html;
+}
+
+function showDetail(k){
+  const s=allSubs[k];if(!s)return;
+  const info=TYPES[s.type];
+  const rows=info.vars.map((v,i)=>{
+    const vals=(s.angles&&s.angles[i])||[];
+    const valid=vals.filter(x=>x!=null);
+    const avg=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1):'—';
+    return `<tr><td>${v}</td>${[0,1,2].map(j=>`<td style="text-align:center;font-size:13px">${vals[j]!=null?vals[j]+'°':'—'}</td>`).join('')}<td class="avg-cell">${avg}°</td></tr>`;
+  }).join('');
+
+  document.getElementById('modalInner').innerHTML=`
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:1.25rem">
+      <span class="cls-chip">${s.cls}반</span>
+      <span class="tbadge ${s.type}">${s.type}형</span>
+      <div style="font-size:17px;font-weight:700">${s.group}모둠 상세</div>
+      <button class="btn ghost sm" onclick="closeModal()" style="margin-left:auto"><i class="ti ti-x"></i></button>
+    </div>
+    ${s.photo?`<img src="${s.photo}" style="width:100%;max-height:220px;object-fit:contain;border-radius:var(--r);border:1px solid var(--border);margin-bottom:1.25rem">`:''}
+    <div class="dtable-wrap" style="margin-bottom:1.25rem">
+      <table class="dtable">
+        <thead><tr><th>${info.varLabel}</th><th>1차</th><th>2차</th><th>3차</th><th style="text-align:right">평균</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    ${s.q1?`<div class="qbox"><div class="qlabel">분석 01</div><div class="qtitle">${info.varLabel}에 따른 경향</div><div style="font-size:13px;line-height:1.7;color:var(--ink2)">${s.q1}</div></div>`:''}
+    ${s.q2?`<div class="qbox"><div class="qlabel">분석 02</div><div class="qtitle">빗면에서 미끄러지지 않는 방법</div><div style="font-size:13px;line-height:1.7;color:var(--ink2)">${s.q2}</div></div>`:''}
+    ${s.q3?`<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">변인 분류</div><div style="font-size:13px;line-height:1.7;color:var(--ink2)">${s.q3}</div></div>`:''}
+    <button class="btn btn-full" onclick="closeModal()" style="margin-top:.5rem">닫기</button>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+
+(function(){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js';document.head.appendChild(s);})();
+</script>
+</body>
+</html>
