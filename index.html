@@ -10,7 +10,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   /* ★★★ 여기에 Firebase 설정을 붙여넣으세요 ★★★ */
   const firebaseConfig = {
@@ -25,17 +24,6 @@
 
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
-  const storage = getStorage(app);
-
-  window._fbSet    = (path, data) => set(ref(db, path), data);
-  window._fbGet    = (path) => get(ref(db, path)).then(s => s.val());
-  window._fbListen = (path, cb)   => onValue(ref(db, path), snap => cb(snap.val()));
-  window._fbUpload = async (file, cls, grp) => {
-    const r = sRef(storage, `reports/${cls}반_${grp}모둠_${Date.now()}`);
-    await uploadBytes(r, file);
-    return getDownloadURL(r);
-  };
-
   window._fbReady = true;
   if(window._onFbReady) window._onFbReady();
 </script>
@@ -142,10 +130,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .qbox textarea{width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--surface);color:var(--ink);resize:vertical;line-height:1.65;min-height:80px;transition:border-color .15s}
 .qbox textarea:focus{outline:none;border-color:var(--teal2);box-shadow:0 0 0 3px rgba(10,92,71,.1)}
 
-/* upload */
-.upload-area{border:2px dashed var(--border2);border-radius:var(--r2);padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--surface2)}
-.upload-area:hover{border-color:var(--teal2);background:var(--teal-glass)}
-.upload-area input{display:none}
 .preview-img{max-width:100%;max-height:200px;border-radius:var(--r);border:1px solid var(--border);display:block;margin:0 auto}
 
 /* buttons */
@@ -169,8 +153,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 /* dashboard */
 .dentry{display:flex;gap:12px;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--border)}
 .dentry:last-child{border-bottom:none}
-.dthumb{width:72px;height:58px;border-radius:10px;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
-.dthumb-ph{width:72px;height:58px;border-radius:10px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--border)}
 .pill{background:var(--surface3);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--ink2);display:inline-block}
 
 /* class tab bar */
@@ -192,13 +174,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border-radius:var(--r3) var(--r3) 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:640px;max-height:88vh;overflow-y:auto}
 .modal-handle{width:40px;height:4px;background:var(--ink4);border-radius:2px;margin:0 auto 1.25rem}
-
-/* 전체화면 사진 뷰어 */
-.imgviewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;cursor:zoom-out}
-.imgviewer.open{display:flex}
-.imgviewer img{max-width:95vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-.imgviewer .close-btn{position:fixed;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.imgviewer .close-btn:hover{background:rgba(255,255,255,.3)}
 
 /* notice */
 .notice{border-radius:var(--r);padding:.85rem 1rem;font-size:13px;line-height:1.6;margin-bottom:1rem}
@@ -402,12 +377,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 </div>
 
 <!-- ══ MODAL ══ -->
-<!-- 전체화면 사진 뷰어 -->
-<div class="imgviewer" id="imgViewer" onclick="closeImgViewer()">
-  <button class="close-btn" onclick="closeImgViewer()"><i class="ti ti-x"></i></button>
-  <img id="imgViewerSrc" src="" alt="보고서 사진">
-</div>
-
 <div class="modal-bg" id="modalBg" onclick="bgClose(event)">
   <div class="modal" id="modalInner"><div class="modal-handle"></div></div>
 </div>
@@ -616,19 +585,6 @@ function renderForm(){
     </div>
 
     <div class="card" style="padding:1.25rem">
-      <div style="font-size:15px;font-weight:600;margin-bottom:.75rem">📸 보고서 사진</div>
-      <div class="upload-area" onclick="document.getElementById('photoFile').click()">
-        <input type="file" id="photoFile" accept="image/*" onchange="previewPhoto()">
-        <div style="font-size:36px;margin-bottom:8px">📄</div>
-        <div style="font-size:14px;color:var(--ink2);font-weight:500">사진을 탭하여 업로드</div>
-        <div style="font-size:12px;color:var(--ink3);margin-top:4px">실험 보고서를 카메라로 찍어서 올려주세요</div>
-      </div>
-      <div id="photoPreview" style="margin-top:12px">
-        ${ex&&ex.photo?`<img src="${ex.photo}" class="preview-img">`:''}
-      </div>
-    </div>
-
-    <div class="card" style="padding:1.25rem">
       <div style="font-size:15px;font-weight:600;margin-bottom:.75rem">🔍 분석 및 결론</div>
       <div class="qbox">
         <div class="qlabel">분석 01</div>
@@ -650,11 +606,6 @@ function renderForm(){
     <button class="btn primary btn-full" id="submitBtn" onclick="submitForm()">
       <i class="ti ti-send"></i> 제출하기
     </button>
-    <div id="deleteWrap" style="display:none;margin-top:10px">
-      <button class="btn btn-full" id="deleteBtn" onclick="confirmDeleteSelf()" style="color:var(--coral);border-color:var(--coral)">
-        <i class="ti ti-trash"></i> 제출 취소 (데이터 삭제)
-      </button>
-    </div>
     <div id="formMsg" style="min-height:20px;margin-top:10px;text-align:center;font-size:13px"></div>
   `;
   info.vars.forEach((_,i)=>calcAvg(i));
@@ -671,18 +622,6 @@ function calcAvg(i){
   if(el) el.textContent=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1)+'°':'—';
 }
 
-function deletePhoto(){
-  document.getElementById('photoPreview').innerHTML='';
-  document.getElementById('photoFile').value='';
-  window._deletedPhoto=true;
-}
-function previewPhoto(){
-  const file=document.getElementById('photoFile').files[0];
-  if(!file)return;
-  const r=new FileReader();
-  r.onload=e=>{document.getElementById('photoPreview').innerHTML=`<img src="${e.target.result}" class="preview-img">`;};
-  r.readAsDataURL(file);
-}
 
 async function submitForm(){
   if(!fbReady){alert('Firebase 연결을 확인해주세요.');return;}
@@ -695,16 +634,9 @@ async function submitForm(){
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> 저장 중...';
 
-  let photoURL=window._deletedPhoto?null:(allSubs[key(c,g)]?allSubs[key(c,g)].photo:null); window._deletedPhoto=false;
-  const file=document.getElementById('photoFile').files[0];
-  if(file){
-    try{photoURL=await window._fbUpload(file,c,g);}
-    catch(e){console.warn('사진 업로드 실패',e);}
-  }
 
   const data={
     cls:c,group:g,type:t,angles,
-    photo:photoURL||null,
     q1:document.getElementById('q1').value.trim(),
     q2:document.getElementById('q2').value.trim(),
     q3:document.getElementById('q3').value.trim(),
@@ -809,7 +741,7 @@ function renderDashCls(){
       typeSubs.forEach(s=>{
         const avgs=(s.angles||[]).map(row=>{const v=(row||[]).filter(x=>x!=null);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—';});
         html+=`<div class="dentry">
-          ${s.photo?`<img src="${s.photo}" class="dthumb" onclick="openImgViewer('${s.photo}')" style="cursor:zoom-in" title="클릭하면 크게 보기">`:`<div class="dthumb-ph">📄</div>`}
+          
           <div style="flex:1;min-width:0">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
               <strong style="font-size:14px">${s.group}모둠</strong>
@@ -860,20 +792,6 @@ function showDetail(k){
       <button class="btn ghost sm" onclick="closeModal()" style="margin-left:auto"><i class="ti ti-x"></i></button>
     </div>
 
-    <!-- 사진 -->
-    <div style="margin-bottom:1.25rem">
-      <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">보고서 사진</div>
-      <div id="edPhotoWrap">
-        ${s.photo
-          ? `<div style="position:relative;display:inline-block">
-               <img src="${s.photo}" style="max-width:100%;max-height:180px;object-fit:contain;border-radius:var(--r);border:1px solid var(--border);cursor:zoom-in" onclick="openImgViewer('${s.photo}')" title="클릭하면 크게 보기">
-               <button onclick="edDeletePhoto('${k}')" style="position:absolute;top:6px;right:6px;background:rgba(139,50,32,.85);color:#fff;border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center" title="사진 삭제">✕</button>
-             </div>`
-          : `<div style="font-size:13px;color:var(--ink3);padding:.5rem 0">사진 없음</div>`
-        }
-      </div>
-    </div>
-
     <!-- 측정 데이터 -->
     <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">측정 데이터 수정</div>
     <div class="dtable-wrap" style="margin-bottom:1.25rem">
@@ -920,13 +838,6 @@ function edAvg(i){
   if(el) el.textContent=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1)+'°':'—';
 }
 
-async function edDeletePhoto(k){
-  if(!confirm('사진을 삭제할까요?')) return;
-  const s=allSubs[k]; if(!s) return;
-  try{
-    await window._fbSet('submissions/'+k, {...s, photo:null});
-    document.getElementById('edPhotoWrap').innerHTML='<div style="font-size:13px;color:var(--ink3);padding:.5rem 0">사진이 삭제되었습니다.</div>';
-  } catch(e){ alert('삭제 실패: '+e.message); }
 }
 
 async function saveTeacherEdit(k){
@@ -991,16 +902,6 @@ async function deleteOwnSubmission(){
   }
 }
 
-function openImgViewer(src){
-  document.getElementById('imgViewerSrc').src = src;
-  document.getElementById('imgViewer').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  document.getElementById('imgViewer').classList.remove('open');
-  document.getElementById('imgViewerSrc').src = '';
-  document.body.style.overflow = '';
-}
 /* ESC 키로 닫기 */
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') { closeImgViewer(); closeModal(); }
