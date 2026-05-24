@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>마찰력 탐구 실험</title>
+<title>경사길에서 미끄러지지 않으려면</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   /* ★★★ 여기에 Firebase 설정을 붙여넣으세요 ★★★ */
   const firebaseConfig = {
-    apiKey: "여기에_붙여넣기",
-    authDomain: "여기에_붙여넣기",
-    databaseURL: "여기에_붙여넣기",
-    projectId: "여기에_붙여넣기",
-    storageBucket: "여기에_붙여넣기",
-    messagingSenderId: "여기에_붙여넣기",
-    appId: "여기에_붙여넣기"
+    apiKey: "AIzaSyCOlF04urEtk8P8tmy9fFX-gaXRLdBeS58",
+    authDomain: "hspolaris77.firebaseapp.com",
+    databaseURL: "https://hspolaris77-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "hspolaris77",
+    storageBucket: "hspolaris77.firebasestorage.app",
+    messagingSenderId: "619674894005",
+    appId: "1:619674894005:web:e2c4ccdfd604993264c8fc"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -28,6 +28,7 @@
   const storage = getStorage(app);
 
   window._fbSet    = (path, data) => set(ref(db, path), data);
+  window._fbGet    = (path) => get(ref(db, path)).then(s => s.val());
   window._fbListen = (path, cb)   => onValue(ref(db, path), snap => cb(snap.val()));
   window._fbUpload = async (file, cls, grp) => {
     const r = sRef(storage, `reports/${cls}반_${grp}모둠_${Date.now()}`);
@@ -173,8 +174,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .pill{background:var(--surface3);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--ink2);display:inline-block}
 
 /* class tab bar */
-.cls-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:1rem;scrollbar-width:none}
-.cls-tabs::-webkit-scrollbar{display:none}
+.cls-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+
 .cls-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;color:var(--ink2)}
 .cls-tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
 .cls-tab:hover:not(.active){background:var(--surface3)}
@@ -191,6 +192,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border-radius:var(--r3) var(--r3) 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:640px;max-height:88vh;overflow-y:auto}
 .modal-handle{width:40px;height:4px;background:var(--ink4);border-radius:2px;margin:0 auto 1.25rem}
+
+/* 전체화면 사진 뷰어 */
+.imgviewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;cursor:zoom-out}
+.imgviewer.open{display:flex}
+.imgviewer img{max-width:95vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.imgviewer .close-btn{position:fixed;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.imgviewer .close-btn:hover{background:rgba(255,255,255,.3)}
 
 /* notice */
 .notice{border-radius:var(--r);padding:.85rem 1rem;font-size:13px;line-height:1.6;margin-bottom:1rem}
@@ -228,7 +236,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
   <div class="topbar">
     <div class="topbar-inner">
       <span class="topbar-emoji">🔬</span>
-      <h1>마찰력 탐구 실험</h1>
+      <h1>경사길에서 미끄러지지 않으려면</h1>
       <p>빗면에서 미끄러지기 시작하는 각도를 측정하고<br>마찰력의 원리를 탐구합니다.</p>
     </div>
   </div>
@@ -394,6 +402,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 </div>
 
 <!-- ══ MODAL ══ -->
+<!-- 전체화면 사진 뷰어 -->
+<div class="imgviewer" id="imgViewer" onclick="closeImgViewer()">
+  <button class="close-btn" onclick="closeImgViewer()"><i class="ti ti-x"></i></button>
+  <img id="imgViewerSrc" src="" alt="보고서 사진">
+</div>
+
 <div class="modal-bg" id="modalBg" onclick="bgClose(event)">
   <div class="modal" id="modalInner"><div class="modal-handle"></div></div>
 </div>
@@ -403,7 +417,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 /* ═══════════════════════════════
    CONFIG
 ═══════════════════════════════ */
-const PIN      = '1234';
+let PIN = '1234'; // Firebase에서 로드됨
 const MAX      = 5;
 const N_CLASS  = 11;
 const N_GROUP  = 15;
@@ -448,6 +462,10 @@ const clsSubs = (cls) => {
 ═══════════════════════════════ */
 function initFb(){
   fbReady = true;
+  /* Firebase에서 PIN 로드 */
+  window._fbGet('config/pin').then(val => {
+    if(val) PIN = val;
+  }).catch(()=>{});
   window._fbListen('submissions', val => {
     allSubs = val || {};
     if(document.getElementById('s6').classList.contains('active')) renderDash();
@@ -632,9 +650,18 @@ function renderForm(){
     <button class="btn primary btn-full" id="submitBtn" onclick="submitForm()">
       <i class="ti ti-send"></i> 제출하기
     </button>
+    <div id="deleteWrap" style="display:none;margin-top:10px">
+      <button class="btn btn-full" id="deleteBtn" onclick="confirmDeleteSelf()" style="color:var(--coral);border-color:var(--coral)">
+        <i class="ti ti-trash"></i> 제출 취소 (데이터 삭제)
+      </button>
+    </div>
     <div id="formMsg" style="min-height:20px;margin-top:10px;text-align:center;font-size:13px"></div>
   `;
   info.vars.forEach((_,i)=>calcAvg(i));
+  /* 이미 제출한 모둠이면 삭제 버튼 표시 */
+  if(allSubs[key(c,g)]){
+    document.getElementById('deleteWrap').style.display='block';
+  }
 }
 
 function calcAvg(i){
@@ -644,6 +671,11 @@ function calcAvg(i){
   if(el) el.textContent=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1)+'°':'—';
 }
 
+function deletePhoto(){
+  document.getElementById('photoPreview').innerHTML='';
+  document.getElementById('photoFile').value='';
+  window._deletedPhoto=true;
+}
 function previewPhoto(){
   const file=document.getElementById('photoFile').files[0];
   if(!file)return;
@@ -663,7 +695,7 @@ async function submitForm(){
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> 저장 중...';
 
-  let photoURL=allSubs[key(c,g)]?allSubs[key(c,g)].photo:null;
+  let photoURL=window._deletedPhoto?null:(allSubs[key(c,g)]?allSubs[key(c,g)].photo:null); window._deletedPhoto=false;
   const file=document.getElementById('photoFile').files[0];
   if(file){
     try{photoURL=await window._fbUpload(file,c,g);}
@@ -695,10 +727,28 @@ async function submitForm(){
 ═══════════════════════════════ */
 const pinIds=['p1','p2','p3','p4'];
 function pinNext(idx){if(document.getElementById(pinIds[idx]).value.length===1&&idx<3)document.getElementById(pinIds[idx+1]).focus();}
-function checkPin(){
+async function checkPin(){
   const pin=pinIds.map(id=>document.getElementById(id).value).join('');
-  if(pin===PIN){pinIds.forEach(id=>{document.getElementById(id).value=''});document.getElementById('pinErr').textContent='';go(6);}
-  else{document.getElementById('pinErr').textContent='PIN이 올바르지 않습니다.';pinIds.forEach(id=>{document.getElementById(id).value=''});document.getElementById('p1').focus();}
+  const errEl=document.getElementById('pinErr');
+  errEl.textContent='확인 중...';
+
+  /* Firebase에서 항상 최신 PIN 직접 fetch */
+  try{
+    const dbUrl='https://hspolaris77-default-rtdb.asia-southeast1.firebasedatabase.app/config/pin.json';
+    const res=await fetch(dbUrl);
+    const val=await res.json();
+    if(val) PIN=String(val);
+  }catch(e){ console.warn('PIN fetch 실패', e); }
+
+  if(pin===PIN){
+    pinIds.forEach(id=>{document.getElementById(id).value=''});
+    errEl.textContent='';
+    go(6);
+  } else {
+    errEl.textContent='PIN이 올바르지 않습니다.';
+    pinIds.forEach(id=>{document.getElementById(id).value=''});
+    document.getElementById('p1').focus();
+  }
 }
 
 /* ═══════════════════════════════
@@ -759,7 +809,7 @@ function renderDashCls(){
       typeSubs.forEach(s=>{
         const avgs=(s.angles||[]).map(row=>{const v=(row||[]).filter(x=>x!=null);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—';});
         html+=`<div class="dentry">
-          ${s.photo?`<img src="${s.photo}" class="dthumb">`:`<div class="dthumb-ph">📄</div>`}
+          ${s.photo?`<img src="${s.photo}" class="dthumb" onclick="openImgViewer('${s.photo}')" style="cursor:zoom-in" title="클릭하면 크게 보기">`:`<div class="dthumb-ph">📄</div>`}
           <div style="flex:1;min-width:0">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
               <strong style="font-size:14px">${s.group}모둠</strong>
@@ -791,11 +841,14 @@ function renderDashCls(){
 function showDetail(k){
   const s=allSubs[k];if(!s)return;
   const info=TYPES[s.type];
-  const rows=info.vars.map((v,i)=>{
+  /* 수정 가능한 테이블 */
+  const editRows=info.vars.map((v,i)=>{
     const vals=(s.angles&&s.angles[i])||[];
-    const valid=vals.filter(x=>x!=null);
-    const avg=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1):'—';
-    return `<tr><td>${v}</td>${[0,1,2].map(j=>`<td style="text-align:center;font-size:13px">${vals[j]!=null?vals[j]+'°':'—'}</td>`).join('')}<td class="avg-cell">${avg}°</td></tr>`;
+    return `<tr>
+      <td style="font-size:13px;color:var(--ink2);white-space:nowrap">${v}</td>
+      ${[0,1,2].map(j=>`<td><input type="number" step="0.1" min="0" max="90" id="ed_${i}_${j}" value="${vals[j]!=null?vals[j]:''}" placeholder="—" oninput="edAvg(${i})" style="width:100%;padding:5px 6px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;text-align:center;min-width:52px;font-family:inherit"></td>`).join('')}
+      <td class="avg-cell" id="edAvg${i}">—</td>
+    </tr>`;
   }).join('');
 
   document.getElementById('modalInner').innerHTML=`
@@ -803,26 +856,205 @@ function showDetail(k){
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:1.25rem">
       <span class="cls-chip">${s.cls}반</span>
       <span class="tbadge ${s.type}">${s.type}형</span>
-      <div style="font-size:17px;font-weight:700">${s.group}모둠 상세</div>
+      <div style="font-size:17px;font-weight:700">${s.group}모둠 교사 수정</div>
       <button class="btn ghost sm" onclick="closeModal()" style="margin-left:auto"><i class="ti ti-x"></i></button>
     </div>
-    ${s.photo?`<img src="${s.photo}" style="width:100%;max-height:220px;object-fit:contain;border-radius:var(--r);border:1px solid var(--border);margin-bottom:1.25rem">`:''}
+
+    <!-- 사진 -->
+    <div style="margin-bottom:1.25rem">
+      <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">보고서 사진</div>
+      <div id="edPhotoWrap">
+        ${s.photo
+          ? `<div style="position:relative;display:inline-block">
+               <img src="${s.photo}" style="max-width:100%;max-height:180px;object-fit:contain;border-radius:var(--r);border:1px solid var(--border);cursor:zoom-in" onclick="openImgViewer('${s.photo}')" title="클릭하면 크게 보기">
+               <button onclick="edDeletePhoto('${k}')" style="position:absolute;top:6px;right:6px;background:rgba(139,50,32,.85);color:#fff;border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center" title="사진 삭제">✕</button>
+             </div>`
+          : `<div style="font-size:13px;color:var(--ink3);padding:.5rem 0">사진 없음</div>`
+        }
+      </div>
+    </div>
+
+    <!-- 측정 데이터 -->
+    <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">측정 데이터 수정</div>
     <div class="dtable-wrap" style="margin-bottom:1.25rem">
       <table class="dtable">
-        <thead><tr><th>${info.varLabel}</th><th>1차</th><th>2차</th><th>3차</th><th style="text-align:right">평균</th></tr></thead>
-        <tbody>${rows}</tbody>
+        <thead><tr><th>${info.varLabel}</th><th>1차(°)</th><th>2차(°)</th><th>3차(°)</th><th style="text-align:right">평균</th></tr></thead>
+        <tbody>${editRows}</tbody>
       </table>
     </div>
-    ${s.q1?`<div class="qbox"><div class="qlabel">분석 01</div><div class="qtitle">${info.varLabel}에 따른 경향</div><div style="font-size:13px;line-height:1.7;color:var(--ink2)">${s.q1}</div></div>`:''}
-    ${s.q2?`<div class="qbox"><div class="qlabel">분석 02</div><div class="qtitle">빗면에서 미끄러지지 않는 방법</div><div style="font-size:13px;line-height:1.7;color:var(--ink2)">${s.q2}</div></div>`:''}
-    ${s.q3?`<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">변인 분류</div><div style="font-size:13px;line-height:1.7;color:var(--ink2)">${s.q3}</div></div>`:''}
-    <button class="btn btn-full" onclick="closeModal()" style="margin-top:.5rem">닫기</button>
+
+    <!-- 분석 -->
+    <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">분석 및 결론 수정</div>
+    <div class="qbox" style="margin-bottom:.6rem">
+      <div class="qlabel">분석 01</div>
+      <div class="qtitle">${info.varLabel}에 따른 경향</div>
+      <textarea id="edQ1" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">${s.q1||''}</textarea>
+    </div>
+    <div class="qbox" style="margin-bottom:.6rem">
+      <div class="qlabel">분석 02</div>
+      <div class="qtitle">빗면에서 미끄러지지 않는 방법</div>
+      <textarea id="edQ2" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">${s.q2||''}</textarea>
+    </div>
+    <div class="qbox" style="margin-bottom:1rem">
+      <div class="qlabel">분석 03</div>
+      <div class="qtitle">변인 분류</div>
+      <textarea id="edQ3" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">${s.q3||''}</textarea>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-full" onclick="closeModal()">취소</button>
+      <button class="btn primary btn-full" onclick="saveTeacherEdit('${k}')"><i class="ti ti-device-floppy"></i> 저장</button>
+    </div>
+    <div id="edMsg" style="font-size:13px;text-align:center;margin-top:10px;min-height:18px"></div>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  /* 평균 초기 계산 */
+  const n=info.vars.length;
+  for(let i=0;i<n;i++) edAvg(i);
+}
+
+function edAvg(i){
+  const vals=[0,1,2].map(j=>{const v=parseFloat(document.getElementById(`ed_${i}_${j}`).value);return isNaN(v)?null:v;});
+  const valid=vals.filter(v=>v!==null);
+  const el=document.getElementById(`edAvg${i}`);
+  if(el) el.textContent=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1)+'°':'—';
+}
+
+async function edDeletePhoto(k){
+  if(!confirm('사진을 삭제할까요?')) return;
+  const s=allSubs[k]; if(!s) return;
+  try{
+    await window._fbSet('submissions/'+k, {...s, photo:null});
+    document.getElementById('edPhotoWrap').innerHTML='<div style="font-size:13px;color:var(--ink3);padding:.5rem 0">사진이 삭제되었습니다.</div>';
+  } catch(e){ alert('삭제 실패: '+e.message); }
+}
+
+async function saveTeacherEdit(k){
+  const s=allSubs[k]; if(!s) return;
+  const info=TYPES[s.type];
+  const angles=info.vars.map((_,i)=>[0,1,2].map(j=>{
+    const v=parseFloat(document.getElementById(`ed_${i}_${j}`).value); return isNaN(v)?null:v;
+  }));
+  const updated={
+    ...s,
+    angles,
+    q1:document.getElementById('edQ1').value.trim(),
+    q2:document.getElementById('edQ2').value.trim(),
+    q3:document.getElementById('edQ3').value.trim(),
+    editedAt:new Date().toLocaleTimeString('ko-KR')
+  };
+  try{
+    await window._fbSet('submissions/'+k, updated);
+    document.getElementById('edMsg').innerHTML='<span style="color:var(--teal)">✅ 저장 완료!</span>';
+    setTimeout(()=>{ closeModal(); renderDash(); }, 1000);
+  } catch(e){
+    document.getElementById('edMsg').innerHTML=`<span style="color:var(--coral)">오류: ${e.message}</span>`;
+  }
+}
+
+/* ═══════════════════════════════
+   학생 제출 취소
+═══════════════════════════════ */
+function confirmDeleteSelf(){
+  const c=curCls, g=curGroup;
+  document.getElementById('modalInner').innerHTML=`
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:.5rem 0 1rem">
+      <div style="font-size:44px;margin-bottom:12px">🗑️</div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:8px">${c}반 ${g}모둠 제출 취소</div>
+      <div style="font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:1.5rem">
+        입력한 데이터와 사진이 모두 삭제돼요.<br>
+        삭제 후 다시 처음부터 제출할 수 있어요.
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-full" onclick="closeModal()">취소</button>
+        <button class="btn btn-full" onclick="deleteOwnSubmission()" style="background:var(--coral);color:#fff;border-color:var(--coral)">
+          <i class="ti ti-trash"></i> 삭제하기
+        </button>
+      </div>
+    </div>
   `;
   document.getElementById('modalBg').classList.add('open');
 }
 
+async function deleteOwnSubmission(){
+  const c=curCls, g=curGroup;
+  try{
+    await window._fbSet('submissions/'+key(c,g), null);
+    closeModal();
+    document.getElementById('formMsg').innerHTML='<span style="color:var(--teal)">✅ 삭제 완료! 다시 제출할 수 있어요.</span>';
+    document.getElementById('deleteWrap').style.display='none';
+    setTimeout(()=>go(2), 1500);
+  } catch(e){
+    closeModal();
+    document.getElementById('formMsg').innerHTML=`<span style="color:var(--coral)">오류: ${e.message}</span>`;
+  }
+}
+
+function openImgViewer(src){
+  document.getElementById('imgViewerSrc').src = src;
+  document.getElementById('imgViewer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeImgViewer(){
+  document.getElementById('imgViewer').classList.remove('open');
+  document.getElementById('imgViewerSrc').src = '';
+  document.body.style.overflow = '';
+}
+/* ESC 키로 닫기 */
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') { closeImgViewer(); closeModal(); }
+});
+
 function bgClose(e){if(e.target===document.getElementById('modalBg'))closeModal();}
 function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+
+/* ═══════════════════════════════
+   PIN 변경
+═══════════════════════════════ */
+function openPinModal(){
+  document.getElementById('modalInner').innerHTML=`
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
+      <i class="ti ti-key" style="font-size:22px;color:var(--teal)"></i>
+      <div style="font-size:17px;font-weight:700">비밀번호 변경</div>
+      <button class="btn ghost sm" onclick="closeModal()" style="margin-left:auto"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="field" style="margin-bottom:1rem">
+      <label>새 비밀번호 (숫자 4자리)</label>
+      <input type="password" id="newPin1" maxlength="4" inputmode="numeric" placeholder="새 비밀번호 입력" style="letter-spacing:6px;font-size:20px;text-align:center">
+    </div>
+    <div class="field" style="margin-bottom:1.25rem">
+      <label>새 비밀번호 확인</label>
+      <input type="password" id="newPin2" maxlength="4" inputmode="numeric" placeholder="다시 입력" style="letter-spacing:6px;font-size:20px;text-align:center">
+    </div>
+    <div id="pinChangeMsg" style="font-size:13px;min-height:20px;margin-bottom:12px;text-align:center"></div>
+    <button class="btn primary btn-full" onclick="saveNewPin()"><i class="ti ti-check"></i> 변경하기</button>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  setTimeout(()=>document.getElementById('newPin1').focus(),100);
+}
+
+async function saveNewPin(){
+  const p1 = document.getElementById('newPin1').value.trim();
+  const p2 = document.getElementById('newPin2').value.trim();
+  const msg = document.getElementById('pinChangeMsg');
+
+  if(p1.length < 4){ msg.innerHTML='<span style="color:var(--coral)">⚠️ 4자리를 입력해주세요.</span>'; return; }
+  if(!/^\d{4}$/.test(p1)){ msg.innerHTML='<span style="color:var(--coral)">⚠️ 숫자만 입력해주세요.</span>'; return; }
+  if(p1 !== p2){ msg.innerHTML='<span style="color:var(--coral)">⚠️ 비밀번호가 일치하지 않습니다.</span>'; return; }
+
+  try{
+    /* Firebase REST API로 직접 저장 */
+    const dbUrl='https://hspolaris77-default-rtdb.asia-southeast1.firebasedatabase.app/config/pin.json';
+    await fetch(dbUrl, {method:'PUT', body:JSON.stringify(p1)});
+    PIN = p1;
+    msg.innerHTML='<span style="color:var(--teal)">✅ 비밀번호가 변경되었습니다!</span>';
+    setTimeout(()=>closeModal(), 1200);
+  } catch(e){
+    msg.innerHTML=`<span style="color:var(--coral)">오류: ${e.message}</span>`;
+  }
+}
 
 (function(){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js';document.head.appendChild(s);})();
 </script>
