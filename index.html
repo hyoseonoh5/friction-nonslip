@@ -475,6 +475,13 @@ function renderForm(){
     '</div>' +
     '<div class="notice blue">' + info.desc + '</div>' +
     '<div class="card" style="padding:1.25rem">' +
+      '<div style="font-size:15px;font-weight:600;margin-bottom:.75rem">👤 모둠원 이름</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+      '<div><label style="display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px">이름 1</label><input type="text" id="name1" placeholder="이름을 입력하세요" value="' + (ex ? ex.name1||'' : '') + '" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:14px;font-family:inherit"></div>' +
+      '<div><label style="display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px">이름 2</label><input type="text" id="name2" placeholder="이름을 입력하세요" value="' + (ex ? ex.name2||'' : '') + '" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:14px;font-family:inherit"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card" style="padding:1.25rem">' +
       '<div style="font-size:15px;font-weight:600;margin-bottom:.75rem">📐 측정 데이터</div>' +
       '<div style="font-size:13px;color:var(--ink2);margin-bottom:.75rem">각 조건에서 미끄러지기 시작하는 각도를 3회 측정하세요.</div>' +
       '<div class="dtable-wrap"><table class="dtable">' +
@@ -514,6 +521,8 @@ async function submitForm(){
   btn.innerHTML = '<span class="spinner"></span> 저장 중...';
   const data = {
     cls:c, group:g, type:t, angles,
+    name1: document.getElementById('name1').value.trim(),
+    name2: document.getElementById('name2').value.trim(),
     q1: document.getElementById('q1').value.trim(),
     q2: document.getElementById('q2').value.trim(),
     q3: document.getElementById('q3').value.trim(),
@@ -638,6 +647,7 @@ function showDetail(k){
     '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:1.25rem">' +
       '<span class="cls-chip">' + s.cls + '반</span><span class="tbadge ' + s.type + '">' + s.type + '형</span>' +
       '<div style="font-size:17px;font-weight:700">' + s.group + '모둠 수정</div>' +
+      (s.name1||s.name2 ? '<div style="font-size:13px;color:var(--ink2);width:100%;margin-top:4px">👤 ' + [s.name1,s.name2].filter(Boolean).join(' · ') + '</div>' : '') +
       '<button class="btn ghost sm" onclick="closeModal()" style="margin-left:auto"><i class="ti ti-x"></i></button>' +
     '</div>' +
     '<div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">측정 데이터 수정</div>' +
