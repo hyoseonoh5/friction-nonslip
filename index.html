@@ -35,28 +35,28 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --teal:#0a5c47;--teal2:#0f7a5e;--teal3:#13a07a;--teal-glass:rgba(10,92,71,.08);
-  --amber:#9a6010;--amber-bg:#fef3dc;
-  --blue:#1a5fa8;--blue-bg:#e8f1fb;
-  --coral:#8b3220;--coral-bg:#fceae6;
-  --ink:#16160f;--ink2:#4a4a42;--ink3:#8a8a80;--ink4:#c8c8be;
-  --surface:#fff;--surface2:#f7f7f3;--surface3:#efefe9;
-  --border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.15);
+  --teal:#2dd4a0;--teal2:#1ab885;--teal3:#0f9e70;--teal-glass:rgba(45,212,160,.1);
+  --amber:#f6c24a;--amber-bg:rgba(246,194,74,.12);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,.12);
+  --coral:#f87171;--coral-bg:rgba(248,113,113,.12);
+  --ink:#f0f0ec;--ink2:#b0b0a8;--ink3:#686864;--ink4:#404040;
+  --surface:#0f1729;--surface2:#080d1a;--surface3:#162040;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
   --r:12px;--r2:18px;--r3:24px;
-  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.12)
+  --shadow:0 2px 16px rgba(0,0,0,.4);--shadow2:0 8px 40px rgba(0,0,0,.6)
 }
-body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:17px}
 .app{max-width:640px;margin:0 auto;padding:0 0 5rem}
 .screen{display:none}.screen.active{display:block}
 .page-pad{padding:1.5rem 1.25rem}
-.topbar{background:linear-gradient(135deg,var(--teal) 0%,var(--teal2) 60%,var(--teal3) 100%);padding:2.5rem 1.5rem 3.5rem;position:relative;overflow:hidden}
-.topbar::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
-.topbar::after{content:'';position:absolute;bottom:-60px;left:-20px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.04)}
+.topbar{background:linear-gradient(135deg,#0f2027 0%,#1a3a2a 50%,#0f3320 100%);border-bottom:1px solid rgba(45,212,160,.2);padding:0.4rem 1.5rem 0.5rem;position:relative;overflow:hidden}
+.topbar::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(45,212,160,.08)}
+.topbar::after{content:'';position:absolute;bottom:-60px;left:-20px;width:220px;height:220px;border-radius:50%;background:rgba(45,212,160,.05)}
 .topbar-inner{position:relative;z-index:1}
 .topbar h1{font-size:24px;font-weight:700;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
 .topbar p{font-size:14px;color:rgba(255,255,255,.75);line-height:1.5}
 .topbar-emoji{font-size:42px;margin-bottom:12px;display:block}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem 1.5rem;margin-bottom:.85rem;box-shadow:var(--shadow)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem 1.5rem;margin-bottom:.85rem;box-shadow:var(--shadow);backdrop-filter:blur(4px)}
 .card.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}
 .card.tap:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
 .nav-card{display:flex;align-items:center;gap:1rem}
@@ -65,36 +65,36 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .nav-icon.gray{background:var(--surface3)}
 .nav-arrow{margin-left:auto;color:var(--ink4);font-size:20px;flex-shrink:0}
 .tbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:600}
-.tbadge.A{background:#e0f3ec;color:#0a5c47}
-.tbadge.B{background:#fef3dc;color:#9a6010}
-.tbadge.C{background:#e8f1fb;color:#1a5fa8}
+.tbadge.A{background:rgba(45,212,160,.15);color:#2dd4a0;border:1px solid rgba(45,212,160,.25)}
+.tbadge.B{background:rgba(246,194,74,.15);color:#f6c24a;border:1px solid rgba(246,194,74,.25)}
+.tbadge.C{background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
 .progress-bar{height:3px;background:var(--surface3)}
-.progress-fill{height:100%;background:var(--teal3);transition:width .3s;border-radius:0 2px 2px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#2dd4a0,#60a5fa);transition:width .3s;border-radius:0 2px 2px 0}
 .back-row{padding:1rem 1.25rem .25rem;display:flex;align-items:center;gap:8px}
 .sec-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);margin:1.75rem 0 .75rem}
 .cls-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:1rem 0}
 .cls-btn{aspect-ratio:1;border:1.5px solid var(--border2);border-radius:var(--r2);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;transition:all .15s;position:relative}
-.cls-btn:hover{border-color:var(--teal2);background:var(--teal-glass);transform:translateY(-2px);box-shadow:var(--shadow)}
-.cls-btn .cnum{font-size:26px;font-weight:700;color:var(--ink)}
+.cls-btn:hover{border-color:var(--teal);background:var(--teal-glass);transform:translateY(-2px);box-shadow:0 4px 20px rgba(45,212,160,.2)}
+.cls-btn .cnum{font-size:28px;font-weight:700;color:var(--ink)}
 .cls-btn .clbl{font-size:11px;color:var(--ink3);margin-top:2px}
-.cls-btn .cbadge{position:absolute;top:6px;right:8px;font-size:10px;font-weight:700;color:var(--teal);background:#e0f3ec;padding:2px 6px;border-radius:10px}
+.cls-btn .cbadge{position:absolute;top:6px;right:8px;font-size:10px;font-weight:700;color:#0a1a14;background:var(--teal);padding:2px 6px;border-radius:10px}
 .ggroup{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:1rem 0}
 .gbtn{aspect-ratio:1;border:1.5px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit;transition:all .15s}
 .gbtn:hover{border-color:var(--teal2);background:var(--teal-glass)}
-.gbtn.done{border-color:var(--teal2);background:#e0f3ec}
-.gbtn .gnum{font-size:20px;font-weight:700;color:var(--ink);line-height:1}
+.gbtn.done{border-color:var(--teal);background:rgba(45,212,160,.12)}
+.gbtn .gnum{font-size:22px;font-weight:700;color:var(--ink);line-height:1}
 .gbtn .gtype{font-size:10px;color:var(--ink3);margin-top:1px}
 .gbtn .gchk{font-size:10px;color:var(--teal);font-weight:600}
 .gbtn.done .gnum{color:var(--teal)}
 .tcard{border:2px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.25rem;cursor:pointer;transition:all .18s;background:var(--surface);margin-bottom:.75rem;position:relative}
 .tcard:hover{border-color:var(--teal2);box-shadow:0 4px 20px rgba(10,92,71,.12)}
-.tcard.sel{border-color:var(--teal);background:#f0faf6}
+.tcard.sel{border-color:var(--teal);background:rgba(45,212,160,.08)}
 .tcard.full{opacity:.45;cursor:not-allowed}
 .tcard.full:hover{border-color:var(--border);box-shadow:none}
 .tcard-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .tcard-emoji{font-size:26px;line-height:1}
-.tcard-title{font-size:15px;font-weight:600}
-.tcard-desc{font-size:13px;color:var(--ink2);line-height:1.6}
+.tcard-title{font-size:17px;font-weight:600}
+.tcard-desc{font-size:15px;color:var(--ink2);line-height:1.6}
 .tcard-meta{position:absolute;top:14px;right:16px;font-size:12px;color:var(--ink3)}
 .tcard.sel .tcard-meta{display:none}
 .tcard-check{display:none;position:absolute;top:14px;right:14px;color:var(--teal);font-size:22px}
@@ -102,23 +102,23 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .tcard-full-msg{font-size:12px;color:var(--coral);margin-top:6px}
 .dtable-wrap{overflow-x:auto;margin:.5rem 0 1rem;border-radius:var(--r);border:1px solid var(--border)}
 .dtable{width:100%;border-collapse:collapse;min-width:340px}
-.dtable th{padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);background:var(--surface2);border-bottom:1px solid var(--border);text-align:center}
+.dtable th{padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal);background:var(--surface3);border-bottom:1px solid var(--border);text-align:center}
 .dtable th:first-child{text-align:left}
 .dtable td{padding:6px 8px;border-bottom:1px solid var(--border)}
 .dtable tr:last-child td{border-bottom:none}
-.dtable td:first-child{padding:10px 12px;font-size:13px;color:var(--ink2);white-space:nowrap}
-.dtable .avg-cell{text-align:right;font-weight:700;font-size:13px;color:var(--teal);white-space:nowrap;padding:10px 12px}
-.dtable input{width:100%;padding:7px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;text-align:center;background:var(--surface);color:var(--ink);min-width:56px}
+.dtable td:first-child{padding:10px 12px;font-size:15px;color:var(--ink2);white-space:nowrap}
+.dtable .avg-cell{text-align:right;font-weight:700;font-size:15px;color:var(--teal);white-space:nowrap;padding:10px 12px}
+.dtable input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;font-family:inherit;text-align:center;background:var(--surface);color:var(--ink);min-width:56px}
 .dtable input:focus{outline:none;border-color:var(--teal2);box-shadow:0 0 0 2px rgba(10,92,71,.1)}
 .qbox{background:var(--surface2);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.75rem}
 .qbox .qlabel{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.qbox .qtitle{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.5}
-.qbox textarea{width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--surface);color:var(--ink);resize:vertical;line-height:1.65;min-height:80px;transition:border-color .15s}
+.qbox .qtitle{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.5}
+.qbox textarea{width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:15px;font-family:inherit;background:var(--surface);color:var(--ink);resize:vertical;line-height:1.65;min-height:80px;transition:border-color .15s}
 .qbox textarea:focus{outline:none;border-color:var(--teal2);box-shadow:0 0 0 3px rgba(10,92,71,.1)}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--surface);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--surface);color:var(--ink);font-size:16px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .btn:hover{background:var(--surface3)}
-.btn.primary{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 4px 14px rgba(10,92,71,.3)}
-.btn.primary:hover{background:var(--teal2)}
+.btn.primary{background:linear-gradient(135deg,#2dd4a0,#0f9e70);color:#0a1a14;border-color:transparent;box-shadow:0 4px 20px rgba(45,212,160,.3);font-weight:700}
+.btn.primary:hover{background:linear-gradient(135deg,#38e8b0,#1ab885);box-shadow:0 6px 24px rgba(45,212,160,.4)}
 .btn.primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
 .btn.sm{padding:6px 13px;font-size:12px;border-radius:9px}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--ink3)}
@@ -126,14 +126,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .btn-full{width:100%;justify-content:center;padding:14px}
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1rem;text-align:center;box-shadow:var(--shadow)}
-.stat .val{font-size:24px;font-weight:700;line-height:1}
-.stat .lbl{font-size:11px;color:var(--ink3);margin-top:5px;font-weight:500}
+.stat .val{font-size:26px;font-weight:700;line-height:1}
+.stat .lbl{font-size:13px;color:var(--ink3);margin-top:5px;font-weight:500}
 .dentry{display:flex;gap:12px;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--border)}
 .dentry:last-child{border-bottom:none}
-.pill{background:var(--surface3);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--ink2);display:inline-block}
+.pill{background:var(--surface3);border-radius:20px;padding:4px 12px;font-size:14px;color:var(--ink2);display:inline-block}
 .cls-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
-.cls-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;color:var(--ink2)}
-.cls-tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.cls-tab{padding:8px 16px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface);font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;color:var(--ink2)}
+.cls-tab.active{background:linear-gradient(135deg,#2dd4a0,#0f9e70);color:#0a1a14;border-color:transparent;font-weight:700}
 .cls-tab:hover:not(.active){background:var(--surface3)}
 .pin-wrap{max-width:320px;margin:3rem auto;text-align:center;padding:0 1rem}
 .pin-row{display:flex;gap:10px;justify-content:center;margin:1.5rem 0}
@@ -144,11 +144,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border-radius:var(--r3) var(--r3) 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:640px;max-height:88vh;overflow-y:auto}
 .modal-handle{width:40px;height:4px;background:var(--ink4);border-radius:2px;margin:0 auto 1.25rem}
-.notice{border-radius:var(--r);padding:.85rem 1rem;font-size:13px;line-height:1.6;margin-bottom:1rem}
-.notice.blue{background:var(--blue-bg);color:var(--blue)}
-.notice.green{background:#e0f3ec;color:var(--teal)}
+.notice{border-radius:var(--r);padding:.85rem 1rem;font-size:15px;line-height:1.6;margin-bottom:1rem}
+.notice.blue{background:rgba(96,165,250,.08);color:var(--blue);border:1px solid rgba(96,165,250,.15)}
+.notice.green{background:rgba(45,212,160,.08);color:var(--teal);border:1px solid rgba(45,212,160,.2)}
 .cls-chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--ink2)}
-.hint{font-size:12px;color:var(--ink3);text-align:center;margin-top:.5rem}
+.hint{font-size:14px;color:var(--ink3);text-align:center;margin-top:.5rem}
 .spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:480px){
@@ -156,7 +156,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
   .cls-grid{grid-template-columns:repeat(4,1fr)}
   .ggroup{gap:6px}
   .gbtn .gnum{font-size:17px}
-  .topbar{padding:2rem 1.25rem 3rem}
+  .topbar{padding:0.4rem 1.25rem 0.5rem}
 }
 </style>
 </head>
@@ -166,6 +166,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 <!-- S0: HOME -->
 <div class="screen active" id="s0">
   <div class="topbar">
+    
     <div class="topbar-inner">
       <span class="topbar-emoji">🔬</span>
       <h1>경사길에서 미끄러지지 않으려면</h1>
@@ -178,8 +179,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
       <div class="nav-card">
         <div class="nav-icon green"><i class="ti ti-pencil" style="font-size:22px;color:var(--teal)"></i></div>
         <div>
-          <div style="font-size:15px;font-weight:600;margin-bottom:3px">실험 결과 제출하기</div>
-          <div style="font-size:13px;color:var(--ink3)">반 선택 → 모둠 선택 → 주제 선택 → 데이터 입력</div>
+          <div style="font-size:17px;font-weight:600;margin-bottom:3px">실험 결과 제출하기</div>
+          <div style="font-size:15px;color:var(--ink3)">반 선택 → 모둠 선택 → 주제 선택 → 데이터 입력</div>
         </div>
         <i class="ti ti-chevron-right nav-arrow"></i>
       </div>
@@ -188,8 +189,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
       <div class="nav-card">
         <div class="nav-icon gray"><i class="ti ti-layout-dashboard" style="font-size:22px;color:var(--ink2)"></i></div>
         <div>
-          <div style="font-size:15px;font-weight:600;margin-bottom:3px">교사 대시보드</div>
-          <div style="font-size:13px;color:var(--ink3)">전체 반·모둠 제출 현황 및 결과 분석</div>
+          <div style="font-size:17px;font-weight:600;margin-bottom:3px">교사 대시보드</div>
+          <div style="font-size:15px;color:var(--ink3)">전체 반·모둠 제출 현황 및 결과 분석</div>
         </div>
         <i class="ti ti-chevron-right nav-arrow"></i>
       </div>
@@ -197,9 +198,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
     <div class="sec-title">탐구 주제 안내</div>
     <div class="card" style="padding:1rem 1.25rem">
       <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;align-items:flex-start;gap:10px"><span class="tbadge A">A형</span><div style="font-size:13px;line-height:1.6"><strong>접촉면 거칠기</strong><br><span style="color:var(--ink3)">플라스틱 면 / 고무 면 / 사포 면</span></div></div>
-        <div style="display:flex;align-items:flex-start;gap:10px"><span class="tbadge B">B형</span><div style="font-size:13px;line-height:1.6"><strong>물체 무게</strong><br><span style="color:var(--ink3)">가벼운 것 / 무거운 것</span></div></div>
-        <div style="display:flex;align-items:flex-start;gap:10px"><span class="tbadge C">C형</span><div style="font-size:13px;line-height:1.6"><strong>접촉 면적</strong><br><span style="color:var(--ink3)">넓은 면 / 좁은 면</span></div></div>
+        <div style="display:flex;align-items:flex-start;gap:10px"><span class="tbadge A">A형</span><div style="font-size:15px;line-height:1.6"><strong>접촉면 거칠기</strong><br><span style="color:var(--ink3)">플라스틱 면 / 고무 면 / 사포 면</span></div></div>
+        <div style="display:flex;align-items:flex-start;gap:10px"><span class="tbadge B">B형</span><div style="font-size:15px;line-height:1.6"><strong>물체 무게</strong><br><span style="color:var(--ink3)">가벼운 것 / 무거운 것</span></div></div>
+        <div style="display:flex;align-items:flex-start;gap:10px"><span class="tbadge C">C형</span><div style="font-size:15px;line-height:1.6"><strong>접촉 면적</strong><br><span style="color:var(--ink3)">넓은 면 / 좁은 면</span></div></div>
       </div>
       <div style="font-size:11px;color:var(--ink3);margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">※ 각 주제 최대 5모둠까지 선택 가능</div>
     </div>
@@ -214,8 +215,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
     <span style="font-size:12px;color:var(--ink3);margin-left:auto">1 / 4단계</span>
   </div>
   <div class="page-pad" style="padding-top:.5rem">
-    <div style="font-size:20px;font-weight:700;margin-bottom:4px">반 선택</div>
-    <div style="font-size:14px;color:var(--ink2);margin-bottom:1.25rem">우리 반을 선택하세요.</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:4px">반 선택</div>
+    <div style="font-size:16px;color:var(--ink2);margin-bottom:1.25rem">우리 반을 선택하세요.</div>
     <div class="cls-grid" id="classGrid"></div>
   </div>
 </div>
@@ -230,9 +231,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
   <div class="page-pad" style="padding-top:.5rem">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
       <span class="cls-chip" id="grpClsLabel"></span>
-      <div style="font-size:20px;font-weight:700">모둠 선택</div>
+      <div style="font-size:22px;font-weight:700">모둠 선택</div>
     </div>
-    <div style="font-size:14px;color:var(--ink2);margin-bottom:1.25rem">우리 모둠 번호를 선택하세요.</div>
+    <div style="font-size:16px;color:var(--ink2);margin-bottom:1.25rem">우리 모둠 번호를 선택하세요.</div>
     <div class="ggroup" id="groupGrid"></div>
     <div class="hint"><i class="ti ti-info-circle" style="vertical-align:-2px"></i> 초록색은 이미 제출 완료된 모둠입니다.</div>
   </div>
@@ -248,7 +249,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
   <div class="page-pad" style="padding-top:.5rem">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
       <span class="cls-chip" id="typeClsLabel"></span>
-      <div style="font-size:20px;font-weight:700">실험 주제 선택</div>
+      <div style="font-size:22px;font-weight:700">실험 주제 선택</div>
     </div>
     <div style="font-size:14px;color:var(--ink2);margin-bottom:1.25rem"><span id="typeGrpLabel" style="font-weight:700;color:var(--teal)"></span>이 탐구할 주제를 직접 고르세요.</div>
     <div id="typeCards"></div>
@@ -270,8 +271,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
 <div class="screen" id="s5">
   <div style="text-align:center;padding:4rem 1.5rem">
     <div style="font-size:64px;margin-bottom:16px">🎉</div>
-    <div style="font-size:22px;font-weight:700;margin-bottom:8px">제출 완료!</div>
-    <div style="font-size:14px;color:var(--ink2);line-height:1.7">실험 결과가 저장되었어요.<br>선생님께서 확인하실 수 있습니다.</div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:8px">제출 완료!</div>
+    <div style="font-size:16px;color:var(--ink2);line-height:1.7">실험 결과가 저장되었어요.<br>선생님께서 확인하실 수 있습니다.</div>
     <div style="margin-top:2rem"><button class="btn primary" onclick="go(0)"><i class="ti ti-home"></i> 처음으로</button></div>
   </div>
 </div>
@@ -281,8 +282,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
   <div class="back-row"><button class="btn ghost sm" onclick="go(0)"><i class="ti ti-arrow-left"></i> 처음으로</button></div>
   <div class="pin-wrap">
     <div style="font-size:44px;margin-bottom:14px">🔒</div>
-    <div style="font-size:21px;font-weight:700;margin-bottom:6px">교사 PIN 입력</div>
-    <div style="font-size:14px;color:var(--ink2)">4자리 비밀번호를 입력하세요.</div>
+    <div style="font-size:23px;font-weight:700;margin-bottom:6px">교사 PIN 입력</div>
+    <div style="font-size:16px;color:var(--ink2)">4자리 비밀번호를 입력하세요.</div>
     <div class="pin-row">
       <input type="password" maxlength="1" class="pin-cell" id="p1" oninput="pinNext(0)" inputmode="numeric">
       <input type="password" maxlength="1" class="pin-cell" id="p2" oninput="pinNext(1)" inputmode="numeric">
@@ -304,8 +305,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--surface2);color:var(
         <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px">실시간 제출 현황 — 전체 11반</div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn sm" onclick="renderDash()" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff"><i class="ti ti-refresh"></i></button>
-        <button class="btn sm" onclick="go(0)" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff"><i class="ti ti-x"></i></button>
+        <button class="btn sm" onclick="renderDash()" style="background:rgba(45,212,160,.15);border-color:rgba(45,212,160,.3);color:var(--teal)"><i class="ti ti-refresh"></i></button>
+        <button class="btn sm" onclick="go(0)" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:var(--ink2)"><i class="ti ti-x"></i></button>
       </div>
     </div>
   </div>
@@ -475,14 +476,14 @@ function renderForm(){
     '</div>' +
     '<div class="notice blue">' + info.desc + '</div>' +
     '<div class="card" style="padding:1.25rem">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:.75rem">👤 모둠원 이름</div>' +
+      '<div style="font-size:17px;font-weight:600;margin-bottom:.75rem">👤 모둠원 이름</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
       '<div><label style="display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px">이름 1</label><input type="text" id="name1" placeholder="이름을 입력하세요" value="' + (ex ? ex.name1||'' : '') + '" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:14px;font-family:inherit"></div>' +
       '<div><label style="display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px">이름 2</label><input type="text" id="name2" placeholder="이름을 입력하세요" value="' + (ex ? ex.name2||'' : '') + '" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:14px;font-family:inherit"></div>' +
       '</div>' +
     '</div>' +
     '<div class="card" style="padding:1.25rem">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:.75rem">📐 측정 데이터</div>' +
+      '<div style="font-size:17px;font-weight:600;margin-bottom:.75rem">📐 측정 데이터</div>' +
       '<div style="font-size:13px;color:var(--ink2);margin-bottom:.75rem">각 조건에서 미끄러지기 시작하는 각도를 3회 측정하세요.</div>' +
       '<div class="dtable-wrap"><table class="dtable">' +
         '<thead><tr><th>' + info.varLabel + '</th><th>1차(°)</th><th>2차(°)</th><th>3차(°)</th><th style="text-align:right">평균(°)</th></tr></thead>' +
@@ -490,7 +491,7 @@ function renderForm(){
       '</table></div>' +
     '</div>' +
     '<div class="card" style="padding:1.25rem">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:.75rem">🔍 분석 및 결론</div>' +
+      '<div style="font-size:17px;font-weight:600;margin-bottom:.75rem">🔍 분석 및 결론</div>' +
       '<div class="qbox"><div class="qlabel">분석 01</div><div class="qtitle">' + info.varLabel + '에 따라 미끄러지기 시작하는 각도는 어떻게 달라졌나요?</div><textarea id="q1" placeholder="측정 결과를 바탕으로 경향을 서술하세요.">' + (ex ? ex.q1 || '' : '') + '</textarea></div>' +
       '<div class="qbox"><div class="qlabel">분석 02</div><div class="qtitle">이 결과를 통해 경사길에서 미끄러지지 않기 위해서 어떻게 해야 할지 결론을 쓰세요.</div><textarea id="q2" placeholder="실험 결과를 근거로 경사길에서 미끄러지지 않는 방법을 서술하세요.">' + (ex ? ex.q2 || '' : '') + '</textarea></div>' +
       '<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">이 실험의 조작 변인, 통제 변인, 종속 변인을 각각 쓰세요.</div><textarea id="q3" placeholder="예) 조작 변인: 거칠기 조건 / 통제 변인: 무게·면적 / 종속 변인: 미끄러지기 시작하는 각도">' + (ex ? ex.q3 || '' : '') + '</textarea></div>' +
