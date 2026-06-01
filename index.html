@@ -497,7 +497,7 @@ function renderForm(){
       '<div style="font-size:17px;font-weight:600;margin-bottom:.75rem">🔍 분석 및 결론</div>' +
       '<div class="qbox"><div class="qlabel">분석 01</div><div class="qtitle">' + info.varLabel + '에 따라 미끄러지기 시작하는 각도는 어떻게 달라졌나요?</div><textarea id="q1" placeholder="측정 결과를 바탕으로 경향을 서술하세요.">' + (ex ? ex.q1 || '' : '') + '</textarea></div>' +
       '<div class="qbox"><div class="qlabel">분석 02</div><div class="qtitle">이 결과를 통해 경사길에서 미끄러지지 않기 위해서 어떻게 해야 할지 결론을 쓰세요.</div><textarea id="q2" placeholder="실험 결과를 근거로 경사길에서 미끄러지지 않는 방법을 서술하세요.">' + (ex ? ex.q2 || '' : '') + '</textarea></div>' +
-      '<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">이 실험의 조작 변인, 통제 변인, 종속 변인을 각각 쓰세요.</div><textarea id="q3" placeholder="예) 조작 변인: 거칠기 조건 / 통제 변인: 무게·면적 / 종속 변인: 미끄러지기 시작하는 각도">' + (ex ? ex.q3 || '' : '') + '</textarea></div>' +
+      '<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">이 실험에서 실험 오차를 줄이기 위해 노력한 부분을 쓰세요.</div><textarea id="q3" placeholder="예) 매번 같은 위치에서 물체를 올려놓았다. 각도를 천천히 높여가며 측정하였다.">' + (ex ? ex.q3 || '' : '') + '</textarea></div>' +
     '</div>' +
     '<button class="btn primary btn-full" id="submitBtn" onclick="submitForm()"><i class="ti ti-send"></i> 제출하기</button>' +
     (ex ? '<div style="margin-top:10px"><button class="btn btn-full" onclick="confirmDeleteSelf()" style="color:var(--coral);border-color:var(--coral)"><i class="ti ti-trash"></i> 제출 취소 (데이터 삭제)</button></div>' : '') +
@@ -660,7 +660,7 @@ function showDetail(k){
     '<div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">분석 및 결론 수정</div>' +
     '<div class="qbox" style="margin-bottom:.6rem"><div class="qlabel">분석 01</div><div class="qtitle">' + info.varLabel + '에 따른 경향</div><textarea id="edQ1" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">' + (s.q1||'') + '</textarea></div>' +
     '<div class="qbox" style="margin-bottom:.6rem"><div class="qlabel">분석 02</div><div class="qtitle">경사길에서 미끄러지지 않는 방법</div><textarea id="edQ2" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">' + (s.q2||'') + '</textarea></div>' +
-    '<div class="qbox" style="margin-bottom:1rem"><div class="qlabel">분석 03</div><div class="qtitle">변인 분류</div><textarea id="edQ3" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">' + (s.q3||'') + '</textarea></div>' +
+    '<div class="qbox" style="margin-bottom:1rem"><div class="qlabel">분석 03</div><div class="qtitle">실험 오차를 줄이기 위해 노력한 부분</div><textarea id="edQ3" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">' + (s.q3||'') + '</textarea></div>' +
     '<div style="display:flex;gap:8px">' +
     '<button class="btn" onclick="closeModal();renderDashCls()" style="background:var(--amber-bg);color:var(--amber);border:2px solid var(--amber);font-weight:700"><i class="ti ti-arrow-left"></i> 모둠 목록으로</button>' +
     '<button class="btn btn-full" onclick="closeModal()">취소</button>' +
