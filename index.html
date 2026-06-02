@@ -509,8 +509,10 @@ function renderForm(){
 function calcAvg(i){
   const vals = [0,1,2].map(j => { const v = parseFloat(document.getElementById('a' + i + '_' + j).value); return isNaN(v) ? null : v; });
   const valid = vals.filter(v => v !== null);
-  const el = document.getElementById('avg' + i);
-  if(el) el.textContent = valid.length ? (valid.reduce((a,b) => a+b, 0) / valid.length).toFixed(1) + '°' : '—';
+  const avgEl = document.getElementById('avg' + i);
+  const rngEl = document.getElementById('rng' + i);
+  if(avgEl) avgEl.textContent = valid.length ? (valid.reduce((a,b) => a+b, 0) / valid.length).toFixed(1) + '°' : '—';
+  if(rngEl) rngEl.textContent = valid.length >= 2 ? (Math.max(...valid) - Math.min(...valid)).toFixed(1) + '°' : '—';
 }
 
 async function submitForm(){
