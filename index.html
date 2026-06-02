@@ -361,10 +361,7 @@ const clsSubs = (cls) => {
 /* ── FIREBASE ── */
 function initFb(){
   fbReady = true;
-  fetch(DB_URL + '/config/pin.json')
-    .then(r => r.json())
-    .then(v => { if(v) PIN = String(v); })
-    .catch(() => {});
+  /* PIN은 해시로만 비교 — 앱에 평문 로드 안 함 */
   window._fbListen('submissions', val => {
     allSubs = val || {};
     if(document.getElementById('s6').classList.contains('active')) renderDash();
@@ -572,21 +569,34 @@ async function deleteOwnSubmission(){
   }catch(e){ closeModal(); alert('오류: ' + e.message); }
 }
 
+/* ── SHA-256 해시 ── */
+async function sha256(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
 /* ── PIN ── */
 const pinIds = ['p1','p2','p3','p4'];
 function pinNext(idx){ if(document.getElementById(pinIds[idx]).value.length === 1 && idx < 3) document.getElementById(pinIds[idx+1]).focus(); }
 async function checkPin(){
   const pin = pinIds.map(id => document.getElementById(id).value).join('');
   document.getElementById('pinErr').textContent = '확인 중...';
-  try{ const r = await fetch(DB_URL + '/config/pin.json'); const v = await r.json(); if(v) PIN = String(v); }catch(e){}
-  if(pin === PIN){
+  try{
+    /* 입력값을 해시로 변환 후 Firebase의 해시값과 비교 */
+    const inputHash = await sha256(pin);
+    const r = await fetch(DB_URL + '/config/pinHash.json');
+    const storedHash = await r.json();
     pinIds.forEach(id => { document.getElementById(id).value = ''; });
-    document.getElementById('pinErr').textContent = '';
-    go(6);
-  } else {
-    document.getElementById('pinErr').textContent = 'PIN이 올바르지 않습니다.';
+    if(storedHash && inputHash === storedHash){
+      document.getElementById('pinErr').textContent = '';
+      go(6);
+    } else {
+      document.getElementById('pinErr').textContent = 'PIN이 올바르지 않습니다.';
+      document.getElementById('p1').focus();
+    }
+  } catch(e){
+    document.getElementById('pinErr').textContent = '오류가 발생했습니다. 다시 시도해주세요.';
     pinIds.forEach(id => { document.getElementById(id).value = ''; });
-    document.getElementById('p1').focus();
   }
 }
 
