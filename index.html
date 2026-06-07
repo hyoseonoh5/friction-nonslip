@@ -460,6 +460,47 @@ function updateTypeBtn(){
 function renderForm(){
   const g = curGroup, t = curType, c = curCls, info = TYPES[t];
   const ex = allSubs[key(c, g)] || null;
+
+  /* 이미 제출된 모둠이면 잠금 화면 표시 */
+  if(ex){
+    const cond_rows = info.vars.map((v,i) => {
+      const vals = (ex.angles && ex.angles[i]) || [];
+      const valid = vals.filter(x=>x!=null);
+      const avg = valid.length ? (valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1) : '—';
+      const rng = valid.length>=2 ? (Math.max(...valid)-Math.min(...valid)).toFixed(1) : '—';
+      return '<tr><td style="font-size:15px;color:var(--ink2)">' + v + '</td>' +
+        [0,1,2].map(j=>'<td style="text-align:center;font-size:15px">'+(vals[j]!=null?vals[j]+'°':'—')+'</td>').join('') +
+        '<td style="text-align:center;font-weight:700;color:var(--teal3);font-size:15px">'+avg+'°</td>' +
+        '<td style="text-align:center;font-weight:700;color:var(--amber);font-size:15px">'+rng+'°</td>' +
+        '</tr>';
+    }).join('');
+
+    document.getElementById('formContent').innerHTML =
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1rem">' +
+        '<span class="cls-chip">' + c + '반</span>' +
+        '<span class="tbadge ' + t + '">' + t + '형</span>' +
+        '<div style="font-size:20px;font-weight:700">' + g + '모둠</div>' +
+        '<div style="font-size:15px;color:var(--ink2)">— ' + info.label + '</div>' +
+      '</div>' +
+      '<div style="background:rgba(248,113,113,.12);border:2px solid var(--coral);border-radius:var(--r2);padding:1.25rem;margin-bottom:1rem;text-align:center">' +
+        '<div style="font-size:28px;margin-bottom:8px">🔒</div>' +
+        '<div style="font-size:16px;font-weight:700;color:var(--coral);margin-bottom:6px">이미 제출 완료된 모둠입니다.</div>' +
+        '<div style="font-size:14px;color:var(--ink2)">데이터 수정은 선생님께 문의하세요.</div>' +
+      '</div>' +
+      '<div class="card" style="padding:1.25rem">' +
+        '<div style="font-size:15px;font-weight:600;margin-bottom:.75rem">📐 제출된 데이터 (읽기 전용)</div>' +
+        '<div class="dtable-wrap"><table class="dtable">' +
+          '<thead><tr><th>' + info.varLabel + '</th><th>1차(°)</th><th>2차(°)</th><th>3차(°)</th>' +
+          '<th style="text-align:center">평균(°)</th><th style="text-align:center">오차범위</th></tr></thead>' +
+          '<tbody>' + cond_rows + '</tbody>' +
+        '</table></div>' +
+      '</div>' +
+      (ex.q1?'<div class="qbox"><div class="qlabel">분석 01</div><div class="qtitle">' + info.varLabel + '에 따른 각도 변화</div><div style="font-size:14px;line-height:1.7;color:var(--ink2)">'+ex.q1+'</div></div>':'') +
+      (ex.q2?'<div class="qbox"><div class="qlabel">분석 02</div><div class="qtitle">경사길에서 미끄러지지 않는 방법</div><div style="font-size:14px;line-height:1.7;color:var(--ink2)">'+ex.q2+'</div></div>':'') +
+      (ex.q3?'<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">실험 오차를 줄이기 위해 노력한 부분</div><div style="font-size:14px;line-height:1.7;color:var(--ink2)">'+ex.q3+'</div></div>':'') +
+      '<div style="font-size:13px;color:var(--ink3);text-align:center;margin-top:1rem"><i class="ti ti-clock"></i> 제출시간: ' + (ex.time||'') + '</div>';
+    return;
+  }
   const tableRows = info.vars.map((v, i) =>
     '<tr><td>' + v + '</td>' +
     [0,1,2].map(j => '<td><input type="number" step="0.1" min="0" max="90" id="a' + i + '_' + j + '" placeholder="—" value="' + (ex && ex.angles && ex.angles[i] && ex.angles[i][j] != null ? ex.angles[i][j] : '') + '" oninput="calcAvg(' + i + ')"></td>').join('') +
@@ -674,7 +715,10 @@ function showDetail(k){
     '<div class="qbox" style="margin-bottom:.6rem"><div class="qlabel">분석 02</div><div class="qtitle">경사길에서 미끄러지지 않는 방법</div><textarea id="edQ2" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">' + (s.q2||'') + '</textarea></div>' +
     '<div class="qbox" style="margin-bottom:1rem"><div class="qlabel">분석 03</div><div class="qtitle">실험 오차를 줄이기 위해 노력한 부분</div><textarea id="edQ3" rows="3" style="width:100%;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;resize:vertical;line-height:1.65">' + (s.q3||'') + '</textarea></div>' +
     '<div style="display:flex;gap:8px">' +
+    '<div style="display:flex;gap:8px;margin-bottom:8px">' +
     '<button class="btn" onclick="closeModal();renderDashCls()" style="background:var(--amber-bg);color:var(--amber);border:2px solid var(--amber);font-weight:700"><i class="ti ti-arrow-left"></i> 모둠 목록으로</button>' +
+    '<button class="btn" onclick="cancelSubmission(\''+k+'\')" style="background:rgba(248,113,113,.15);color:var(--coral);border:2px solid var(--coral);font-weight:700"><i class="ti ti-lock-open"></i> 제출 취소</button>' +
+    '</div>' +
     '<button class="btn btn-full" onclick="closeModal()">취소</button>' +
     '<button class="btn primary btn-full" onclick="saveTeacherEdit(\'' + k + '\')"><i class="ti ti-device-floppy"></i> 저장</button>' +
     '</div>' +
@@ -705,6 +749,19 @@ async function saveTeacherEdit(k){
     setTimeout(() => { closeModal(); renderDash(); }, 1000);
   }catch(e){
     document.getElementById('edMsg').innerHTML = '<span style="color:var(--coral)">오류: ' + e.message + '</span>';
+  }
+}
+
+/* ── 교사 제출 취소 ── */
+async function cancelSubmission(k){
+  if(!confirm('이 모둠의 제출을 취소하면 학생이 다시 제출할 수 있게 됩니다. 취소하시겠습니까?')) return;
+  try{
+    await window._fbSet('submissions/' + k, null);
+    closeModal();
+    renderDash();
+    alert('제출이 취소되었습니다. 학생이 다시 제출할 수 있습니다.');
+  } catch(e){
+    alert('오류: ' + e.message);
   }
 }
 
