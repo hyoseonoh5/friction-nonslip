@@ -695,10 +695,13 @@ function showDetail(k){
   const info = TYPES[s.type];
   const editRows = info.vars.map((v, i) => {
     const vals = (s.angles && s.angles[i]) || [];
+    const valid = vals.filter(x => x != null);
+    const initAvg = valid.length ? (valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1)+'°' : '—';
+    const initRng = valid.length >= 2 ? (Math.max(...valid)-Math.min(...valid)).toFixed(1)+'°' : '—';
     return '<tr><td style="font-size:13px;color:var(--ink2);white-space:nowrap">' + v + '</td>' +
       [0,1,2].map(j => '<td><input type="number" step="0.1" min="0" max="90" id="ed_' + i + '_' + j + '" value="' + (vals[j] != null ? vals[j] : '') + '" placeholder="—" oninput="edAvg(' + i + ')" style="width:100%;padding:5px 6px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;text-align:center;min-width:52px;font-family:inherit"></td>').join('') +
-      '<td class="avg-cell" id="edAvg' + i + '">—</td>' +
-      '<td class="avg-cell" style="color:var(--amber)" id="edRng' + i + '">—</td></tr>';
+      '<td class="avg-cell" id="edAvg' + i + '">' + initAvg + '</td>' +
+      '<td class="avg-cell" style="color:var(--amber)" id="edRng' + i + '">' + initRng + '</td></tr>';
   }).join('');
   document.getElementById('modalInner').innerHTML =
     '<div class="modal-handle"></div>' +
@@ -729,8 +732,10 @@ function showDetail(k){
 function edAvg(i){
   const vals = [0,1,2].map(j => { const v = parseFloat(document.getElementById('ed_' + i + '_' + j).value); return isNaN(v) ? null : v; });
   const valid = vals.filter(v => v !== null);
-  const el = document.getElementById('edAvg' + i);
-  if(el) el.textContent = valid.length ? (valid.reduce((a,b) => a+b,0)/valid.length).toFixed(1) + '°' : '—';
+  const avgEl = document.getElementById('edAvg' + i);
+  const rngEl = document.getElementById('edRng' + i);
+  if(avgEl) avgEl.textContent = valid.length ? (valid.reduce((a,b) => a+b,0)/valid.length).toFixed(1) + '°' : '—';
+  if(rngEl) rngEl.textContent = valid.length >= 2 ? (Math.max(...valid) - Math.min(...valid)).toFixed(1) + '°' : '—';
 }
 async function saveTeacherEdit(k){
   const s = allSubs[k]; if(!s) return;
