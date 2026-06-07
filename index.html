@@ -538,7 +538,7 @@ function renderForm(){
       '<div class="qbox"><div class="qlabel">분석 03</div><div class="qtitle">이 실험에서 실험 오차를 줄이기 위해 노력한 부분을 쓰세요.</div><textarea id="q3" placeholder="예) 매번 같은 위치에서 물체를 올려놓았다. 각도를 천천히 높여가며 측정하였다.">' + (ex ? ex.q3 || '' : '') + '</textarea></div>' +
     '</div>' +
     '<button class="btn primary btn-full" id="submitBtn" onclick="submitForm()"><i class="ti ti-send"></i> 제출하기</button>' +
-    (ex ? '<div style="margin-top:10px"><button class="btn btn-full" onclick="confirmDeleteSelf()" style="color:var(--coral);border-color:var(--coral)"><i class="ti ti-trash"></i> 제출 취소 (데이터 삭제)</button></div>' : '') +
+    /* 학생 제출 취소 불가 — 교사 대시보드에서만 가능 */
     '<div id="formMsg" style="min-height:20px;margin-top:10px;text-align:center;font-size:13px"></div>';
 
   info.vars.forEach((_, i) => calcAvg(i));
